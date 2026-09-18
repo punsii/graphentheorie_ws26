@@ -43,6 +43,11 @@ void graph_set(Graph* in_graph, u32 x, u32 y, Vertex v)
     in_graph->verts[ y * in_graph->num_verts + x ] = v;
 }
 
+void graph_remove(Graph* in_graph, u32 x, u32 y)
+{
+    in_graph->verts[ y * in_graph->num_verts + x ] = (Vertex){ .id = 0 };
+}
+
 void graph_print(const Graph* in_graph)
 {
     GRAPH_ASSERT_INIT(in_graph);

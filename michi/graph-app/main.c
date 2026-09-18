@@ -1,8 +1,10 @@
+#include <stdio.h>
 #include <string.h>
 
 #include <raylib.h>
 
 #include "graph.h"
+#include "utils.h"
 
 int main(int argc, char** argv)
 {
@@ -18,9 +20,22 @@ int main(int argc, char** argv)
     int scr_height = GetScreenHeight();
     SetWindowSize(scr_width, scr_height);
 
-    /* Graph API */
+    // TODO: Actually vertices should be in their own list.
+    // Graph only stores adjacency information.
+    //
+    /* Init graph with a random location for each vertex. */
     Graph graph;
     graph_create(&graph, 12);
+    for ( u32 i = 0; i < graph.num_verts; i++ )
+    {
+        for ( u32 j = 0; j < graph.num_verts; j++ )
+        {
+            Vertex x = (Vertex){ .id    = i * graph.num_verts + j,
+                                 .pos_x = rand_between_i32(-100, 100),
+                                 .pos_y = rand_between_i32(-100, 100) };
+        }
+    }
+
     graph_print(&graph);
 
     // Main loop
@@ -53,6 +68,7 @@ int main(int argc, char** argv)
     }
 
     // Shutdown
+    graph_destroy(&graph);
     CloseWindow(); // Close window and OpenGL context
 
     return 0;

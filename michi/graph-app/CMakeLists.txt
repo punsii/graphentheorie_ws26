@@ -11,6 +11,7 @@ add_subdirectory(./dependencies/raylib/)
 add_executable(graphapp
     main.c
     graph.c
+    utils.c
 )
 
 target_include_directories(graphapp PUBLIC
