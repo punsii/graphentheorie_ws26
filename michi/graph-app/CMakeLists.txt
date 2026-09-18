@@ -1,19 +1,19 @@
 
 cmake_minimum_required(VERSION 3.30.2)
-project(raylibgame VERSION 0.0.1)
+project(graphapp VERSION 0.0.1)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # compile_commands.json
 
 add_subdirectory(./dependencies/raylib/)
 
-add_executable(raygame
+add_executable(graphapp
     main.c
 )
 
-target_include_directories(raygame PUBLIC
+target_include_directories(graphapp PUBLIC
     ./dependencies/raylib/src/
 )
 
-target_link_libraries(raygame
+target_link_libraries(graphapp
     PRIVATE raylib
 )
