@@ -6,6 +6,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from functools import cached_property
 
+import networkx as nx
+
 
 @dataclass(frozen=True)
 class Edge:
@@ -68,3 +70,18 @@ class Graph:
                     seen.add(v)
                     queue.append(v)
         return len(seen) == len(self.vertices)
+
+    def to_networkx(self) -> nx.Graph:
+        """The same graph for networkx, which provides the layouts and the drawing."""
+        converted = nx.Graph()
+        converted.add_nodes_from(sorted(self.vertices))
+        converted.add_weighted_edges_from((edge.u, edge.v, edge.weight) for edge in self.edges)
+        return converted
+
+    @classmethod
+    def from_networkx(cls, graph: nx.Graph, default_weight: float = 1.0) -> Graph:
+        """Build from a networkx graph, e.g. one of its generators."""
+        edges = frozenset(
+            Edge(u, v, data.get("weight", default_weight)) for u, v, data in graph.edges(data=True)
+        )
+        return cls(frozenset(graph.nodes), edges)
