@@ -1,15 +1,29 @@
 {
-  description = "A very basic flake";
+  description = "Steiner trees — Graphentheorie SS2026";
 
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   };
 
   outputs = inputs: {
-    packages = builtins.mapAttrs (system: pkgs: {
-      hello = pkgs.hello;
+    devShells = builtins.mapAttrs (system: pkgs:
+      let
+        python = pkgs.python3.withPackages (ps: with ps; [
+          networkx
+          matplotlib
+          numpy
+          pandas
+          pytest
+        ]);
+      in
+      {
+        default = pkgs.mkShell {
+          packages = [ python pkgs.ruff ];
 
-      default = inputs.self.packages.${system}.hello;
-    }) inputs.nixpkgs.legacyPackages;
+          shellHook = ''
+            export PYTHONPATH="$PWD/src''${PYTHONPATH:+:$PYTHONPATH}"
+          '';
+        };
+      }) inputs.nixpkgs.legacyPackages;
   };
 }
