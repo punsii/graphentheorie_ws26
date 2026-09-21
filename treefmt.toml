@@ -1,0 +1,25 @@
+excludes = ["michi/**", "*.lock", "*.patch", "package-lock.json", "go.mod", "go.sum", ".gitattributes", ".gitignore", ".gitmodules", ".hgignore", ".svnignore", "LICENSE"]
+
+[formatter.nixfmt]
+command = "nixfmt"
+excludes = []
+includes = ["*.nix"]
+options = []
+
+[formatter.prettier]
+command = "prettier"
+excludes = []
+includes = ["*.cjs", "*.css", "*.html", "*.js", "*.json", "*.json5", "*.jsx", "*.md", "*.mdx", "*.mjs", "*.scss", "*.ts", "*.tsx", "*.vue", "*.yaml", "*.yml"]
+options = ["--write"]
+
+[formatter.ruff-check]
+command = "ruff"
+excludes = []
+includes = ["*.py", "*.pyi"]
+options = ["check", "--fix"]
+
+[formatter.ruff-format]
+command = "ruff"
+excludes = []
+includes = ["*.py", "*.pyi"]
+options = ["format"]

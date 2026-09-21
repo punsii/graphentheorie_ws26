@@ -1,4 +1,5 @@
 # Coursework Graphentheorie SS2026
+
 ## Quickstart
 
 With Nix (direnv users get this automatically via `.envrc`):
@@ -21,9 +22,9 @@ paths therefore run the same code from the working tree.
 
 ## Layout
 
-| Path                  | Contents                                              |
-| --------------------- | ----------------------------------------------------- |
-| `src/steiner_graph/`  | Library: types, generators, drawing, benchmarks        |
-| `tests/`              | Test suite, including instances with known optima      |
-| `slides/`             | Lecture slides (course material)                       |
-| `results/`            | Benchmark CSVs and generated figures                   |
+| Path                 | Contents                                          |
+| -------------------- | ------------------------------------------------- |
+| `src/steiner_graph/` | Library: types, generators, drawing, benchmarks   |
+| `tests/`             | Test suite, including instances with known optima |
+| `slides/`            | Lecture slides (course material)                  |
+| `results/`           | Benchmark CSVs and generated figures              |
