@@ -1,0 +1,47 @@
+import pytest
+
+from steiner_graph.graph import Edge, Graph
+
+
+def test_edge_is_normalised():
+    assert Edge(3, 1, 2.0) == Edge(1, 3, 2.0)
+
+
+def test_edge_rejects_loop():
+    with pytest.raises(ValueError, match="must differ"):
+        Edge(2, 2, 1.0)
+
+
+@pytest.mark.parametrize("weight", [0.0, -1.5])
+def test_edge_rejects_non_positive_weight(weight):
+    with pytest.raises(ValueError, match="positive"):
+        Edge(1, 2, weight)
+
+
+def test_graph_rejects_endpoint_outside_vertices():
+    with pytest.raises(ValueError, match="outside the graph"):
+        Graph(frozenset({1, 2}), frozenset({Edge(2, 3, 1.0)}))
+
+
+def test_graph_rejects_same_edge_with_two_weights():
+    with pytest.raises(ValueError, match="twice"):
+        Graph(frozenset({1, 2}), frozenset({Edge(1, 2, 1.0), Edge(2, 1, 5.0)}))
+
+
+def test_adjacency_is_symmetric_and_covers_isolated_vertices():
+    graph = Graph(frozenset({1, 2, 3}), frozenset({Edge(1, 2, 1.0)}))
+    assert graph.adjacency == {1: frozenset({2}), 2: frozenset({1}), 3: frozenset()}
+
+
+def test_is_connected():
+    path = Graph(frozenset({1, 2, 3}), frozenset({Edge(1, 2, 1.0), Edge(2, 3, 1.0)}))
+    assert path.is_connected()
+
+
+def test_is_connected_false_for_isolated_vertex():
+    graph = Graph(frozenset({1, 2, 3}), frozenset({Edge(1, 2, 1.0)}))
+    assert not graph.is_connected()
+
+
+def test_empty_graph_is_connected():
+    assert Graph(frozenset(), frozenset()).is_connected()
