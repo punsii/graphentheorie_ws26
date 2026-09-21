@@ -33,7 +33,8 @@
           python = pkgs.python3.withPackages (
             ps: with ps; [
               networkx
-              matplotlib
+              plotly
+              kaleido
               numpy
               pandas
               pytest

@@ -1,6 +1,8 @@
 .direnv
 result
 
+results/*.png
+
 # Python
 __pycache__/
 *.py[cod]
