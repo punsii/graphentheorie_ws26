@@ -40,8 +40,8 @@ def random_connected_graph(
             if random.random() < edge_probability:
                 pairs.add(_pair(u, v))
 
-    edges = frozenset(Edge(u, v, random.randint(1, max_weight)) for u, v in sorted(pairs))
-    return Graph(frozenset(vertices), edges)
+    edges = {Edge(u, v, random.randint(1, max_weight)) for u, v in sorted(pairs)}
+    return Graph(set(vertices), edges)
 
 
 def random_steiner_graph(
@@ -58,7 +58,7 @@ def random_steiner_graph(
 
     graph = random_connected_graph(vertex_count, edge_probability, max_weight)
     terminals = random.sample(sorted(graph.vertices), terminal_count)
-    return SteinerGraph(graph, frozenset(terminals))
+    return SteinerGraph(graph, set(terminals))
 
 
 def _pair(u: int, v: int) -> tuple[int, int]:

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -28,19 +27,19 @@ class Edge:
             object.__setattr__(self, "v", larger)
 
     @property
-    def endpoints(self) -> frozenset[int]:
-        return frozenset((self.u, self.v))
+    def endpoints(self) -> tuple[int, int]:
+        return (self.u, self.v)
 
 
 @dataclass(frozen=True)
 class Graph:
     """A weighted undirected graph."""
 
-    vertices: frozenset[int]
-    edges: frozenset[Edge]
+    vertices: set[int]
+    edges: set[Edge]
 
     def __post_init__(self) -> None:
-        seen: set[frozenset[int]] = set()
+        seen: set[tuple[int, int]] = set()
         for edge in self.edges:
             if edge.u not in self.vertices or edge.v not in self.vertices:
                 raise ValueError(f"Edge {edge.u}--{edge.v} has an endpoint outside the graph.")
@@ -49,13 +48,13 @@ class Graph:
             seen.add(edge.endpoints)
 
     @cached_property
-    def adjacency(self) -> Mapping[int, frozenset[int]]:
-        """Track adjacecny of nodes via adjacecny list per node"""
+    def adjacency(self) -> dict[int, set[int]]:
+        """Track adjacency of nodes via adjacency list per node"""
         neighbours: dict[int, set[int]] = {v: set() for v in self.vertices}
         for edge in self.edges:
             neighbours[edge.u].add(edge.v)
             neighbours[edge.v].add(edge.u)
-        return {v: frozenset(adjacent) for v, adjacent in neighbours.items()}
+        return neighbours
 
     def is_connected(self) -> bool:
         """Check if all vertices are reachable from the a start node."""
@@ -81,7 +80,7 @@ class Graph:
     @classmethod
     def from_networkx(cls, graph: nx.Graph, default_weight: float = 1.0) -> Graph:
         """Build from a networkx graph, e.g. one of its generators."""
-        edges = frozenset(
+        edges = {
             Edge(u, v, data.get("weight", default_weight)) for u, v, data in graph.edges(data=True)
-        )
-        return cls(frozenset(graph.nodes), edges)
+        }
+        return cls(set(graph.nodes), edges)

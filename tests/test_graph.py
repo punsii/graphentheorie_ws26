@@ -21,40 +21,40 @@ def test_edge_rejects_non_positive_weight(weight):
 
 def test_graph_rejects_endpoint_outside_vertices():
     with pytest.raises(ValueError, match="outside the graph"):
-        Graph(frozenset({1, 2}), frozenset({Edge(2, 3, 1.0)}))
+        Graph({1, 2}, {Edge(2, 3, 1.0)})
 
 
 def test_graph_rejects_same_edge_with_two_weights():
     with pytest.raises(ValueError, match="twice"):
-        Graph(frozenset({1, 2}), frozenset({Edge(1, 2, 1.0), Edge(2, 1, 5.0)}))
+        Graph({1, 2}, {Edge(1, 2, 1.0), Edge(2, 1, 5.0)})
 
 
 def test_adjacency_is_symmetric_and_covers_isolated_vertices():
-    graph = Graph(frozenset({1, 2, 3}), frozenset({Edge(1, 2, 1.0)}))
-    assert graph.adjacency == {1: frozenset({2}), 2: frozenset({1}), 3: frozenset()}
+    graph = Graph({1, 2, 3}, {Edge(1, 2, 1.0)})
+    assert graph.adjacency == {1: {2}, 2: {1}, 3: set()}
 
 
 def test_is_connected():
-    path = Graph(frozenset({1, 2, 3}), frozenset({Edge(1, 2, 1.0), Edge(2, 3, 1.0)}))
+    path = Graph({1, 2, 3}, {Edge(1, 2, 1.0), Edge(2, 3, 1.0)})
     assert path.is_connected()
 
 
 def test_is_connected_false_for_isolated_vertex():
-    graph = Graph(frozenset({1, 2, 3}), frozenset({Edge(1, 2, 1.0)}))
+    graph = Graph({1, 2, 3}, {Edge(1, 2, 1.0)})
     assert not graph.is_connected()
 
 
 def test_empty_graph_is_connected():
-    assert Graph(frozenset(), frozenset()).is_connected()
+    assert Graph(set(), set()).is_connected()
 
 
 def test_networkx_round_trip_keeps_vertices_edges_and_weights():
-    graph = Graph(frozenset({1, 2, 3, 4}), frozenset({Edge(1, 2, 1.5), Edge(2, 3, 4.0)}))
+    graph = Graph({1, 2, 3, 4}, {Edge(1, 2, 1.5), Edge(2, 3, 4.0)})
     assert Graph.from_networkx(graph.to_networkx()) == graph
 
 
 def test_to_networkx_stores_the_weight_attribute():
-    graph = Graph(frozenset({1, 2}), frozenset({Edge(1, 2, 2.5)}))
+    graph = Graph({1, 2}, {Edge(1, 2, 2.5)})
     assert graph.to_networkx()[1][2]["weight"] == 2.5
 
 

@@ -28,7 +28,7 @@ def test_generated_graphs_are_connected(seed):
 
 
 def test_vertices_are_numbered_from_one():
-    assert random_connected_graph(4, 0.5).vertices == frozenset({1, 2, 3, 4})
+    assert random_connected_graph(4, 0.5).vertices == {1, 2, 3, 4}
 
 
 def test_probability_zero_gives_a_spanning_tree():

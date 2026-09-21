@@ -15,7 +15,7 @@ class SteinerGraph:
     """
 
     graph: Graph
-    terminals: frozenset[int]
+    terminals: set[int]
 
     def __post_init__(self) -> None:
         outside = self.terminals - self.graph.vertices
@@ -27,6 +27,6 @@ class SteinerGraph:
             raise ValueError("The graph must be connected.")
 
     @property
-    def steiner_vertices(self) -> frozenset[int]:
+    def steiner_vertices(self) -> set[int]:
         """Vertices that are not terminals."""
         return self.graph.vertices - self.terminals
