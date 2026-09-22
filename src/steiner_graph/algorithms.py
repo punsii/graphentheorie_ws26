@@ -1,8 +1,10 @@
-"""Shortest paths, minimum spanning trees and the exact Steiner tree algorithm."""
+"""Shortest paths, minimum spanning trees and the Steiner tree algorithms."""
 
 from __future__ import annotations
 
 import itertools
+
+import networkx as nx
 
 from steiner_graph.graph import Edge, Graph
 from steiner_graph.steiner_graph import SteinerGraph
@@ -157,3 +159,17 @@ def steiner(steiner_graph: SteinerGraph) -> tuple[set[Edge], float]:
         final_edges |= reconstruct_floyd_path_edges(u, v, distances, predecessors)
 
     return final_edges, best_weight
+
+
+def approximate_steiner(steiner_graph: SteinerGraph) -> tuple[set[Edge], float]:
+    """A tree connecting all terminals, at most twice as heavy as the minimal one.
+
+    Uses the approximation by Kou, Markowsky and Berman as implemented by networkx, to
+    have a reference the exact algorithm can be compared against. It never enumerates
+    subsets, so its runtime does not grow with the number of terminals.
+    """
+    approximation = nx.approximation.steiner_tree(
+        steiner_graph.graph.to_networkx(), steiner_graph.terminals, method="kou"
+    )
+    tree = Graph.from_networkx(approximation)
+    return set(tree.edges), sum(edge.weight for edge in tree.edges)

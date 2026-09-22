@@ -1,4 +1,15 @@
-from steiner_graph.algorithms import floyd, prim, reconstruct_floyd_path_edges, steiner
+import random
+
+import pytest
+
+from steiner_graph.algorithms import (
+    approximate_steiner,
+    floyd,
+    prim,
+    reconstruct_floyd_path_edges,
+    steiner,
+)
+from steiner_graph.generators import random_steiner_graph
 from steiner_graph.graph import Edge, Graph
 from steiner_graph.steiner_graph import SteinerGraph
 
@@ -49,3 +60,22 @@ def test_steiner_tree_stops_at_the_terminals():
     assert total_weight == 2.0
     # the expanded tree has to weigh exactly what the search reported
     assert sum(edge.weight for edge in tree) == total_weight
+
+
+def test_approximation_finds_the_optimum_on_the_fixture():
+    tree, total_weight = approximate_steiner(SteinerGraph(GRAPH, {1, 3}))
+    assert tree == {Edge(1, 2, 1.0), Edge(2, 3, 1.0)}
+    assert total_weight == 2.0
+
+
+@pytest.mark.parametrize("seed", range(10))
+def test_approximation_stays_within_twice_the_optimum(seed):
+    random.seed(seed)
+    instance = random_steiner_graph(12, 0.25, 4)
+
+    _, optimum = steiner(instance)
+    approximate_tree, approximate_weight = approximate_steiner(instance)
+
+    assert optimum <= approximate_weight <= 2 * optimum
+    # every terminal has to show up in the approximate tree as well
+    assert instance.terminals <= {vertex for edge in approximate_tree for vertex in edge.endpoints}
