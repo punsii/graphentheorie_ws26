@@ -21,7 +21,7 @@ def floyd(graph: Graph) -> tuple[Distances, Predecessors]:
     vertices = graph.vertices
     edges = graph.edges
 
-    distances = {(u, v): 0 if u == v else float("inf") for u in vertices for v in vertices}
+    distances = {(u, v): 0.0 if u == v else float("inf") for u in vertices for v in vertices}
     predecessors = {(u, v): u if u == v else None for u in vertices for v in vertices}
 
     for u, v, weight in edges:
@@ -43,6 +43,7 @@ def floyd(graph: Graph) -> tuple[Distances, Predecessors]:
 
 
 def reconstruct_floyd_path(u: int, v: int, predecessors: Predecessors) -> list[int]:
+    """Regenerates the path from u to v given the predecessors returned by floyd."""
     path = [v]
     while u != v:
         prev = predecessors[(u, v)]
@@ -70,8 +71,8 @@ def prim(vertices: set[int], distances: Distances) -> tuple[set[Edge], float]:
     mst_edges: set[Edge] = set()
     total_weight = 0.0
 
-    # track which node inside the tree is the closest for each of the unvisited vertices
-    closest_node_in_tree = {v: start for v in vertices if v != start}
+    # track which vertex inside the tree is the closest for each of the unvisited vertices
+    closest_vertex_in_tree = {v: start for v in vertices if v != start}
     # track the distance between each unvisited vertices to the tree
     shortest_path_to_tree = {v: distances[start, v] for v in vertices if v != start}
 
@@ -81,23 +82,24 @@ def prim(vertices: set[int], distances: Distances) -> tuple[set[Edge], float]:
     unvisited = {v for v in vertices if v != start}
 
     while len(visited) < len(vertices):
-        # connect the vertex 'v' that is currently closest to the tree to its closest tree node 't'
-        # since all edges have a weight > 0, this node can only be one edge away
+        # select the vertex 'v' that is currently closest to the tree
         v, weight = min(shortest_path_to_tree.items(), key=lambda item: item[1])
-        t = closest_node_in_tree[v]
-        mst_edges.add(Edge(v, t, distances[v, t]))
+        unvisited.remove(v)
+        visited.add(v)
+
+        # connect 'v' to its closest tree vertex 't'
+        # since all edges have a weight > 0, this shortest path must correspond to a direct edge
+        t = closest_vertex_in_tree[v]
+        mst_edges.add(Edge(v, t, weight))
         total_weight += weight
 
-        visited.add(v)
-        unvisited.remove(v)
-
-        # update the shortest path for the remaining unvisited nodes
+        # update the shortest path for the remaining unvisited vertices
         for u in unvisited:
             if distances[u, v] < shortest_path_to_tree[u]:
                 shortest_path_to_tree[u] = distances[u, v]
-                closest_node_in_tree[u] = v
+                closest_vertex_in_tree[u] = v
         del shortest_path_to_tree[v]
-        del closest_node_in_tree[v]
+        del closest_vertex_in_tree[v]
 
     return (mst_edges, total_weight)
 
