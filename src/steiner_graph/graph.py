@@ -4,27 +4,35 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cached_property
+from typing import NamedTuple
 
 import networkx as nx
 
 
-@dataclass(frozen=True)
-class Edge:
-    """An undirected weighted edge, normalised so that the smaller vertex comes first."""
+class _Edge(NamedTuple):
+    """Helper type for easier iterator usage on the Edge class"""
 
     u: int
     v: int
     weight: float
 
-    def __post_init__(self) -> None:
-        if self.u == self.v:
+
+class Edge(_Edge):
+    """An undirected weighted edge, normalised so that the smaller vertex comes first.
+
+    Unpacks as `for u, v, weight in edges` with the field types kept. The
+    validation lives in this subclass because `NamedTuple` does not
+    allow its own `__new__` to be replaced.
+    """
+
+    def __new__(cls, u: int, v: int, weight: float) -> Edge:
+        if u == v:
             raise ValueError("First and second vertex of the edge must differ.")
-        if self.weight <= 0:
-            raise ValueError(f"Edge weight must be positive, got {self.weight}.")
-        if self.u > self.v:
-            smaller, larger = self.v, self.u
-            object.__setattr__(self, "u", smaller)
-            object.__setattr__(self, "v", larger)
+        if weight <= 0:
+            raise ValueError(f"Edge weight must be positive, got {weight}.")
+        if u > v:
+            u, v = v, u
+        return _Edge.__new__(cls, u, v, weight)
 
     @property
     def endpoints(self) -> tuple[int, int]:
