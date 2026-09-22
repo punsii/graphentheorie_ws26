@@ -1,4 +1,4 @@
-from steiner_graph.algorithms import floyd, prim, reconstruct_floyd_path, steiner
+from steiner_graph.algorithms import floyd, prim, reconstruct_floyd_path_edges, steiner
 from steiner_graph.graph import Edge, Graph
 from steiner_graph.steiner_graph import SteinerGraph
 
@@ -20,15 +20,20 @@ def test_floyd_finds_the_cheap_way_around():
     assert distances[(1, 4)] == 3.0
 
 
-def test_floyd_path_visits_every_vertex_on_the_way():
-    _, predecessors = floyd(GRAPH)
-    assert reconstruct_floyd_path(1, 4, predecessors) == [1, 2, 3, 4]
+def test_floyd_path_edges_are_the_cheap_ones():
+    distances, predecessors = floyd(GRAPH)
+    assert reconstruct_floyd_path_edges(1, 4, distances, predecessors) == set(PATH)
 
 
 def test_floyd_does_not_care_about_vertex_numbering():
     distances, predecessors = floyd(DETOUR)
     assert distances[(1, 4)] == 3.0
-    assert reconstruct_floyd_path(1, 4, predecessors) == [1, 3, 2, 4]
+    # the cheap way from 1 to 4 is 1--3--2--4
+    assert reconstruct_floyd_path_edges(1, 4, distances, predecessors) == {
+        Edge(1, 3, 1.0),
+        Edge(2, 3, 1.0),
+        Edge(2, 4, 1.0),
+    }
 
 
 def test_prim_leaves_out_the_shortcut():
@@ -39,4 +44,8 @@ def test_prim_leaves_out_the_shortcut():
 
 
 def test_steiner_tree_stops_at_the_terminals():
-    assert steiner(SteinerGraph(GRAPH, {1, 3})) == {Edge(1, 2, 1.0), Edge(2, 3, 1.0)}
+    tree, total_weight = steiner(SteinerGraph(GRAPH, {1, 3}))
+    assert tree == {Edge(1, 2, 1.0), Edge(2, 3, 1.0)}
+    assert total_weight == 2.0
+    # the expanded tree has to weigh exactly what the search reported
+    assert sum(edge.weight for edge in tree) == total_weight
