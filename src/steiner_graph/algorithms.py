@@ -59,13 +59,47 @@ def reconstruct_floyd_path(u: int, v: int, predecessors: Predecessors) -> list[i
     return path
 
 
-def prim(graph: Graph) -> set[Edge]:
+def prim(vertices: set[int], distances: Distances) -> tuple[set[Edge], float]:
     """A minimum spanning tree of a connected graph, as its set of edges.
-
-    Prim rather than Kruskal because it runs on the complete distance graph, where scanning
-    the distances costs less than sorting all of its edges.
+    Instead of a Graph, this implementation expects as its inputs vertices and
+    the already precomputed distances between all of them as returned by `floyd()`.
+    Returns a set of Edges plus the sum of all weights of the resulting MST.
     """
-    raise NotImplementedError
+    # choose a random starting vertex
+    start = next(iter(vertices))
+    mst_edges: set[Edge] = set()
+    total_weight = 0.0
+
+    # track which node inside the tree is the closest for each of the unvisited vertices
+    closest_node_in_tree = {v: start for v in vertices if v != start}
+    # track the distance between each unvisited vertices to the tree
+    shortest_path_to_tree = {v: distances[start, v] for v in vertices if v != start}
+
+    # track visited vertices in order to determine end condition
+    visited = {start}
+    # also track unvisited vertices for convenience
+    unvisited = {v for v in vertices if v != start}
+
+    while len(visited) < len(vertices):
+        # connect the vertex 'v' that is currently closest to the tree to its closest tree node 't'
+        # since all edges have a weight > 0, this node can only be one edge away
+        v, weight = min(shortest_path_to_tree.items(), key=lambda item: item[1])
+        t = closest_node_in_tree[v]
+        mst_edges.add(Edge(v, t, distances[v, t]))
+        total_weight += weight
+
+        visited.add(v)
+        unvisited.remove(v)
+
+        # update the shortest path for the remaining unvisited nodes
+        for u in unvisited:
+            if distances[u, v] < shortest_path_to_tree[u]:
+                shortest_path_to_tree[u] = distances[u, v]
+                closest_node_in_tree[u] = v
+        del shortest_path_to_tree[v]
+        del closest_node_in_tree[v]
+
+    return (mst_edges, total_weight)
 
 
 def steiner(steiner_graph: SteinerGraph) -> set[Edge]:

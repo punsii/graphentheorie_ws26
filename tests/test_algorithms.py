@@ -32,7 +32,10 @@ def test_floyd_does_not_care_about_vertex_numbering():
 
 
 def test_prim_leaves_out_the_shortcut():
-    assert prim(GRAPH) == set(PATH)
+    distances, _ = floyd(GRAPH)
+    tree, total_weight = prim(GRAPH.vertices, distances)
+    assert tree == set(PATH)
+    assert total_weight == 3.0
 
 
 def test_steiner_tree_stops_at_the_terminals():
