@@ -1,0 +1,42 @@
+stages:
+  - test
+
+pytest:
+  stage: test
+  image: python:3.13-slim
+  # The repository holds more than the Python project, so only run when this
+  # part of it changes.
+  rules:
+    - changes:
+        - "src/**/*"
+        - "tests/**/*"
+        - pyproject.toml
+        - .gitlab-ci.yml
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  cache:
+    key:
+      files:
+        - pyproject.toml
+    paths:
+      - .cache/pip
+  before_script:
+    - pip install --quiet -e ".[dev]"
+  script:
+    - pytest
+
+# Runs the same tests plus the formatting check through the flake, in the exact
+# versions the flake pins. Manual, because a cold binary cache makes it slow.
+nix flake check:
+  stage: test
+  image: nixos/nix:latest
+  when: manual
+  allow_failure: true
+  variables:
+    NIX_CONFIG: "experimental-features = nix-command flakes"
+  cache:
+    key: nix-store
+    paths:
+      - .cache/nix
+  script:
+    - nix flake check --print-build-logs
