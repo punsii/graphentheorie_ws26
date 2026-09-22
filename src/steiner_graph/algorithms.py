@@ -18,7 +18,45 @@ def floyd(graph: Graph) -> tuple[Distances, Predecessors]:
     Returns the distances and the predecessors; the predecessors are what allows a shortest
     path to be rebuilt vertex by vertex, not just its length.
     """
-    raise NotImplementedError
+    vertices = graph.vertices
+    edges = graph.edges
+
+    distances = {(u, v): 0 if u == v else float("inf") for u in vertices for v in vertices}
+    predecessors = {(u, v): u if u == v else None for u in vertices for v in vertices}
+
+    for u, v, weight in edges:
+        distances[(u, v)] = weight
+        distances[(v, u)] = weight
+        predecessors[(u, v)] = u
+        predecessors[(v, u)] = v
+
+    for k in vertices:
+        for i in vertices:
+            for j in vertices:
+                # Check if the currently known shortest path (i => j)
+                # can be 'shortcutted' by visiting another node (k) first.
+                if distances[(i, k)] + distances[(k, j)] < distances[(i, j)]:
+                    distances[(i, j)] = distances[(i, k)] + distances[(k, j)]
+                    predecessors[(i, j)] = predecessors[(k, j)]
+
+    return distances, predecessors
+
+
+def reconstruct_floyd_path(u: int, v: int, predecessors: Predecessors) -> list[int]:
+    path = [v]
+    while u != v:
+        prev = predecessors[(u, v)]
+        if prev is None:
+            raise Exception(
+                "Subpath of floyd reconstruction is not defined. This should not be possible..."
+            )
+        else:
+            v = prev
+        path.append(v)
+    # currently the path collected predecessors, so we need
+    # to reverse it in order to find the actual path from u => v
+    path.reverse()
+    return path
 
 
 def prim(graph: Graph) -> set[Edge]:
