@@ -25,43 +25,50 @@
           settings.global.excludes = [ "michi/**" ];
         }
       ) inputs.nixpkgs.legacyPackages;
+
+      pythonFor =
+        pkgs:
+        pkgs.python3.withPackages (
+          ps: with ps; [
+            networkx
+            plotly
+            kaleido
+            numpy
+            pandas
+            pytest
+          ]
+        );
     in
     {
-      devShells = builtins.mapAttrs (
-        system: pkgs:
-        let
-          python = pkgs.python3.withPackages (
-            ps: with ps; [
-              networkx
-              plotly
-              kaleido
-              numpy
-              pandas
-              pytest
-            ]
-          );
-        in
-        {
-          default = pkgs.mkShell {
-            packages = [
-              python
-              pkgs.ruff
-              treefmtEval.${system}.config.build.wrapper
-            ];
+      devShells = builtins.mapAttrs (system: pkgs: {
+        default = pkgs.mkShell {
+          packages = [
+            (pythonFor pkgs)
+            pkgs.ruff
+            treefmtEval.${system}.config.build.wrapper
+          ];
 
-            shellHook = ''
-              export PYTHONPATH="$PWD/src''${PYTHONPATH:+:$PYTHONPATH}"
-            '';
-          };
-        }
-      ) inputs.nixpkgs.legacyPackages;
+          shellHook = ''
+            export PYTHONPATH="$PWD/src''${PYTHONPATH:+:$PYTHONPATH}"
+          '';
+        };
+      }) inputs.nixpkgs.legacyPackages;
 
       # for `nix fmt`
       formatter = builtins.mapAttrs (system: eval: eval.config.build.wrapper) treefmtEval;
 
       # for `nix flake check`
-      checks = builtins.mapAttrs (system: eval: {
-        formatting = eval.config.build.check inputs.self;
-      }) treefmtEval;
+      checks = builtins.mapAttrs (system: pkgs: {
+        formatting = treefmtEval.${system}.config.build.check inputs.self;
+
+        tests = pkgs.runCommand "steiner-graph-tests" { nativeBuildInputs = [ (pythonFor pkgs) ]; } ''
+          cp -r ${inputs.self} source
+          chmod -R u+w source
+          cd source
+          export HOME="$TMPDIR"
+          pytest
+          touch "$out"
+        '';
+      }) inputs.nixpkgs.legacyPackages;
     };
 }
