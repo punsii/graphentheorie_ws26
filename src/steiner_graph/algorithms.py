@@ -1,4 +1,4 @@
-"""The algorithms themselves. To be implemented by hand."""
+"""Shortest paths, minimum spanning trees and the exact Steiner tree algorithm."""
 
 from __future__ import annotations
 
@@ -52,9 +52,7 @@ def reconstruct_floyd_path_edges(
     while u != v:
         prev = predecessors[(u, v)]
         if prev is None:
-            raise Exception(
-                "Subpath of floyd reconstruction is not defined. This should not be possible..."
-            )
+            raise ValueError(f"There is no path from {u} to {v}.")
         else:
             edges.add(Edge(prev, v, distances[(prev, v)]))
             v = prev
@@ -77,16 +75,13 @@ def prim(vertices: set[int], distances: Distances) -> tuple[set[Edge], float]:
     # track the distance between each unvisited vertices to the tree
     shortest_path_to_tree = {v: distances[start, v] for v in vertices if v != start}
 
-    # track visited vertices in order to determine end condition
-    visited = {start}
-    # also track unvisited vertices for convenience
+    # the tree is complete once every vertex has been pulled out of this set
     unvisited = {v for v in vertices if v != start}
 
-    while len(visited) < len(vertices):
+    while unvisited:
         # select the vertex 'v' that is currently closest to the tree
         v, weight = min(shortest_path_to_tree.items(), key=lambda item: item[1])
         unvisited.remove(v)
-        visited.add(v)
 
         # connect 'v' to its closest tree vertex 't'
         # since all edges have a weight > 0, this shortest path must correspond to a direct edge
