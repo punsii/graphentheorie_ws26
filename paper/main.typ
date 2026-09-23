@@ -21,10 +21,33 @@
 
 = Methodik
 
-//
-// Quellen: @rehfeldt2023 (fachlicher Einstieg), @dimacs11 und @pace2018web (Wettbewerbe),
-// @bonnet2018 (Aufgabenstellung der PACE-Kategorien), @jungnickel1999 (Grundlage der
-// Implementierung)
+Den Einstieg in das Thema bildete eine breite Recherche in allgemeinen Webquellen und in
+der Wikipedia. Ziel war dabei kein vollständiger Überblick, sondern eine erste Orientierung:
+Welche Problemstellungen werden unter dem Begriff des Steinerbaums zusammengefasst, worin
+unterscheiden sie sich, und welche davon eignen sich für eine eigene Implementierung?
+
+Als fachlicher Ausgangspunkt diente anschließend die Arbeit „Implications, conflicts, and
+reductions for Steiner trees“ von Rehfeldt und Koch @rehfeldt2023. Der Beitrag selbst
+behandelt Reduktionstechniken für exakte Löser und geht damit über den Umfang dieser Arbeit
+hinaus. Nützlich war für uns vor allem seine Einleitung: Sie definiert das
+Steinerbaum-Problem in Graphen, ordnet den Stand der Technik ein und verweist auf relevante
+Wettbewerbe der letzten Jahre, über die sich aktuelle Fragestellungen erschließen lassen.
+
+Zwei dieser Wettbewerbe haben wir näher betrachtet: die 11. DIMACS Implementation Challenge
+von 2014 @dimacs11 und die PACE Challenge 2018 @pace2018web @bonnet2018. Aus den
+Wettbewerbsunterlagen ergab sich der nächste Schritt: eine Sichtung der verschiedenen
+Problemdefinitionen und ihrer Beziehungen zueinander. Entscheidend war dabei die
+Beobachtung, dass sich die geometrischen Varianten unter geeigneten Voraussetzungen auf das
+Problem in Graphen zurückführen lassen. Diese Erkenntnis bildete die Basis für die Wahl der
+behandelten Themen: Das euklidische und das rektilineare Problem werden theoretisch
+behandelt und über diese Reduktion mit dem Graphenproblem verbunden.
+
+Auf dieser Grundlage wurde festgelegt, was selbst umgesetzt wird. Für das Problem in Graphen
+haben wir uns für eine eigene Implementierung eines exakten Verfahrens entschieden, um
+dessen theoretisches Laufzeitverhalten nicht nur zitieren, sondern auch messen zu können.
+Als Vorlage dient Algorithmus 4.6.3 aus Jungnickel, „Graphs, Networks and Algorithms“
+@jungnickel1999, der zugleich Grundlage der Lehrveranstaltung ist und das Verfahren
+einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 = Problemtaxonomie
 
