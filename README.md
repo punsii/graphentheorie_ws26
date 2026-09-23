@@ -38,6 +38,20 @@ figure.write_image("results/instance.png")
 
 Pass a set of edges as `tree=` to draw it on top of the graph.
 
+## Benchmarks and figures
+
+```sh
+python -m steiner_graph.benchmark   # runs the sweeps, writes results/benchmarks.csv
+python -m steiner_graph.figures     # reads that CSV, writes the PNGs into results/
+```
+
+Run both as modules, not as files: `python src/steiner_graph/figures.py` puts
+`src/steiner_graph/` on the import path, where `steiner_graph.py` shadows the package of the
+same name and the imports fail.
+
+The figures never run an algorithm, so they can be restyled without measuring again. The
+sweeps take a few minutes.
+
 ## Layout
 
 | Path                 | Contents                                          |
