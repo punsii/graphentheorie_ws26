@@ -1,5 +1,16 @@
 # Coursework Graphentheorie SS2026
 
+## Overview
+
+Implementation in the form of python code can be found in `./src/` and `./steiner_eukledean.ipynb`.
+
+The use of AI tools is documented in `./docs/KI-Nutzung.md`.
+
+The paper submission was written and rendered using a typs online editor `https://typst.app/`
+It's contents were regularly copied and commited locally in `./paper_sync/`
+
+The presentation slides were created using google-slides and can be found at `./steiner_tree_slides.pdf`
+
 ## Quickstart
 
 With Nix (direnv users get this automatically via `.envrc`):
