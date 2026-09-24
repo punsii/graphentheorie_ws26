@@ -53,7 +53,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 // Kurz halten. Der Hauptteil folgt der hier gesetzten Reihenfolge: euklidisch,
 // rektilinear, Graphen.
 // Hier einmalig die Notation einführen, sie gilt für alle drei Varianten: Netzwerk (G, w)
-// mit positiver Gewichtsfunktion, Terminale R, Steiner-Knoten S = V \ R, r = |R| sowie
+// mit positiver Gewichtsfunktion, Terminalknoten R, Steiner-Knoten S = V \ R, r = |R| sowie
 // S' ⊆ S für die aufgezählten Teilmengen.
 // Quellen: @gilbert1968 (euklidisch), @hanan1966 (rektilinear), @jungnickel1999 (Graphen)
 
@@ -111,7 +111,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 == Hanan-Gitter und Reduktion auf das Graphenproblem
 
 // Ein optimaler rektilinearer Steinerbaum existiert auf dem Gitter, das die waagerechten
-// und senkrechten Geraden durch die Terminale aufspannen. Damit wird aus einem
+// und senkrechten Geraden durch die Terminalknoten aufspannen. Damit wird aus einem
 // geometrischen Problem mit unendlich vielen Kandidatenpunkten ein endliches
 // Graphenproblem.
 // Quelle: @hanan1966
@@ -125,7 +125,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 == Einfache Approximation über den minimalen Spannbaum
 
-// Minimaler Spannbaum über alle Terminale, danach Entfernen der überflüssigen
+// Minimaler Spannbaum über alle Terminalknoten, danach Entfernen der überflüssigen
 // Steiner-Knoten. Übergang: "Aber geht es besser?"
 
 = Implementierter Algorithmus
@@ -181,7 +181,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 = Nebenbemerkung: Dreyfus-Wagner
 
-// O(3^r · n + 2^r · n² + n³), also polynomiell, wenn die Anzahl der Terminale
+// O(3^r · n + 2^r · n² + n³), also polynomiell, wenn die Anzahl der Terminalknoten
 // logarithmisch in n ist. Der Gegensatz ist der interessante Teil: das hier implementierte
 // Verfahren ist exponentiell in |S| = n − r, Dreyfus-Wagner dagegen in r. Daraus erklärt
 // sich die Form der gemessenen Laufzeitkurve.
@@ -207,30 +207,75 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 == Ergebnisse
 
-=== Laufzeit über der Anzahl der Terminale
+=== Laufzeit über der Anzahl der Terminalknoten
 
-// results/runtime_by_terminals.png
+#figure(
+  image("images/benchmarks/runtime_by_terminals.png", width: 90%),
+  caption: [
+    Laufzeit des exakten Verfahrens und der 2-Approximation in Abhängigkeit von der Anzahl
+    der Terminalknoten $r$. Zufällige Graphen mit $n = 30$ Knoten und Kantenwahrscheinlichkeit
+    $p = 0{,}3$; jeder Punkt ist der Median aus fünf Graphen. Im grau hinterlegten Bereich
+    fehlen Messwerte des exakten Verfahrens, weil dort mehr als 60.000 Knotenteilmengen
+    aufgezählt werden müssten. Beide Achsen des Laufzeitwerts sind logarithmisch.
+  ],
+) <fig:laufzeit-terminale>
 
 === Laufzeit über der Knotenzahl
 
-// results/runtime_by_vertices.png, mit den angepassten Exponenten.
+#figure(
+  image("images/benchmarks/runtime_by_vertices.png", width: 90%),
+  caption: [
+    Laufzeit in Abhängigkeit von der Knotenzahl $n$ bei festen vier Terminalknotenn und
+    $p = 0{,}3$. Punkte sind Mediane aus fünf zufälligen Graphen je Größe, die gestrichelten
+    Linien sind Ausgleichsgeraden im doppelt logarithmischen Maßstab; der angegebene Exponent
+    ist deren Steigung. Die Analyse sagt für das exakte Verfahren den Exponenten 3 voraus,
+    da es alle kürzesten Wege zwischen allen Knotenpaaren berechnet.
+  ],
+) <fig:laufzeit-knoten>
 
 === Laufzeit über der Kantenwahrscheinlichkeit
 
-// results/runtime_by_density.png
+#figure(
+  image("images/benchmarks/runtime_by_density.png", width: 90%),
+  caption: [
+    Laufzeit in Abhängigkeit von der Kantenwahrscheinlichkeit $p$, also der
+    Wahrscheinlichkeit, mit der ein Knotenpaar durch eine Kante verbunden ist; $p = 1$
+    entspricht dem vollständigen Graphen. Zufällige Graphen mit $n = 20$ Knoten und
+    $r = 5$ Terminalknotenn, Mediane aus je fünf Graphen. Das exakte Verfahren verläuft flach,
+    weil es auf der Distanzmatrix arbeitet, deren Größe allein von der Knotenzahl abhängt.
+  ],
+) <fig:laufzeit-dichte>
 
 === Messung gegenüber Vorhersage
 
-// results/measured_against_prediction.png
+#figure(
+  image("images/benchmarks/measured_against_prediction.png", width: 90%),
+  caption: [
+    Gemessene Laufzeit des exakten Verfahrens gegenüber dem Aufwand, den die Analyse
+    vorhersagt. Ein Punkt je Messung über alle Messreihen hinweg. Der vorhergesagte Aufwand
+    ist $n^3$ für die kürzesten Wege zwischen allen Knotenpaaren zuzüglich eines Spannbaums
+    je aufgezählter Teilmenge, mit $n$ Knoten, $r$ Terminalknotenn, $|S| = n - r$ Steiner-Knoten,
+    Teilmengengröße $i$ und $k = r + i$ Knoten je Spannbaum. Ein Exponent von 1 würde
+    bedeuten, dass die Analyse die Messwerte vollständig erklärt.
+  ],
+) <fig:messung-vorhersage>
 
 === Güte der Approximation
 
-// results/quality_by_terminals.png
-// Die Schranke von 2 wird in den Messungen nie annähernd erreicht.
+#figure(
+  image("images/benchmarks/quality_by_terminals.png", width: 90%),
+  caption: [
+    Gewicht der 2-Approximation geteilt durch das Gewicht des optimalen Steinerbaums, ein
+    Punkt je Instanz über alle Messreihen hinweg, waagerecht leicht gestreut, damit gleiche
+    Werte sichtbar bleiben. Ein Verhältnis von 1{,}0 bedeutet, dass die Approximation einen
+    optimalen Baum gefunden hat. Die garantierte Schranke von 2 wird in keiner Messung auch
+    nur annähernd erreicht.
+  ],
+) <fig:guete-approximation>
 
 == Interpretation der Laufzeitkurve
 
-// Warum die Kurve einen Buckel hat, wenn sich das Verhältnis von Terminalen zu
+// Warum die Kurve einen Buckel hat, wenn sich das Verhältnis von Terminalknotenn zu
 // Steiner-Knoten verschiebt.
 // Quelle: @dreyfus1971 (Gegensatz: exponentiell in r statt in |S|)
 
@@ -239,7 +284,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 // - Im Allgemeinen NP-vollständig (Entscheidungsvariante).
 // - Approximationen liefern schnell brauchbare Ergebnisse.
 // - Eigenes Ergebnis: die Laufzeit des exakten Verfahrens verläuft nicht monoton, sondern
-//   mit einem Buckel über r. Klein für wenige Terminale, unbrauchbar im mittleren Bereich,
+//   mit einem Buckel über r. Klein für wenige Terminalknoten, unbrauchbar im mittleren Bereich,
 //   wieder klein, wenn r sich n nähert, weil über Teilmengen der n − r Steiner-Knoten
 //   aufgezählt wird. Praktisch: das exakte Verfahren ist an beiden Enden einsetzbar.
 // - Wann welches Verfahren angebracht ist, und dass das über die Reduktion ebenso für die
