@@ -6,8 +6,9 @@ Implementation in the form of python code can be found in `./src/` and `./steine
 
 The use of AI tools is documented in `./docs/KI-Nutzung.md`.
 
-The paper submission was written and rendered using a typs online editor `https://typst.app/`
-It's contents were regularly copied and commited locally in `./paper_sync/`
+The paper submission was mostly written and rendered using a typs online editor `https://typst.app/`
+It's contents were regularly copied and committed locally in `./paper_sync/`
+The final version was committed here as `./steiner_tree_paper.pdf`.
 
 The presentation slides were created using google-slides and can be found at `./steiner_tree_slides.pdf`
 
