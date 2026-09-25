@@ -250,7 +250,7 @@ nicht realisierbar und wird verworfen.
 ==== Vom vollständigen Teilbaum zum optimalen Baum
 
 Da jeder Steinerbaum in vollständige Teilbäume zerfällt
-(TODO), wird zunächst für jede Teilmenge $X$ der Terminale der
+(<@sec:vollstaendig>), wird zunächst für jede Teilmenge $X$ der Terminale der
 beste vollständige Teilbaum $"FST"(X)$ bestimmt. Der optimale Baum für $X$ ist
 dann entweder dieser vollständige Teilbaum oder die Vereinigung zweier optimaler
 Bäume, die sich genau ein Terminal teilen:
@@ -273,8 +273,24 @@ damit vergleichsweise günstig. Die Laufzeit wird also von der
 superexponentiellen Zahl der Topologien dominiert.
 
 
+=== Implementierung <sec:eukl-implementierung>
 
+Das Verfahren ist in Python mit NumPy und NetworkX umgesetzt [Link zum
+GitLab-Repository]. Die vollständigen Topologien werden wie in
+@sec:topologien erzeugt; für jede werden alle $2^(k-2)$ Seitenwahlen mit Melzak
+getestet und der kürzeste gültige Baum behalten. In der Rückwärtsphase wird
+ein Steinerknoten verworfen, wenn er nicht auf der Strecke $e c$ liegt, der
+Winkel $a s b$ nicht 120° beträgt oder er mit einem Nachbarn zusammenfällt;
+degenerierte Bäume werden so gemäß @sec:vollstaendig direkt aussortiert. Alle
+Vergleiche verwenden eine relative Toleranz von $10^(-9)$, bezogen auf die
+beteiligten Kantenlängen.
 
+Phase 1 berechnet den besten vollständigen Teilbaum für jede Teilmenge,
+Phase 2 kombiniert sie nach der Rekursion aus @sec:melzak, von kleinen zu
+großen Teilmengen. Beide Phasen werden getrennt gemessen. Die 120°-Heuristik
+fügt jeweils beim ersten gefundenen Kantenpaar mit einem Winkel unter 120°
+einen Steinerknoten ein; den Fermat-Punkt bestimmt sie mit demselben
+Melzak-Verfahren für drei Terminale.
 
 === Komplexität <sec:komplexitaet>
 
@@ -338,7 +354,83 @@ deutlich verbessern und den MST-Faktor auf etwa 1,17 senken. [Status der
 Begutachtung prüfen.]
 
 
-=== Anwendungen in der Praxis
+== Experimente <sec:eukl-experimente>
+
+=== Versuchsaufbau
+
+Alle Messungen liefen auf [CPU, RAM] mit Python [Version], NumPy [Version]
+und NetworkX [Version]. Zufallsinstanzen bestehen aus $n$ gleichverteilten
+Punkten im Einheitsquadrat mit den Seeds 0 bis 4 je Größe. Zur Validierung
+dienen die 46 Instanzen von Soukup und Chow aus der OR-Library (Datei
+estein1), deren Optima bekannt sind @beasley1990. [Für größere $n$ wird die
+Heuristik zusätzlich auf estein10 bis estein100 mit bekannten Optima
+getestet.]
+
+=== Validierung
+
+Der exakte Löser wurde auf allen 19 Instanzen aus estein1 mit $n <= 7$
+ausgeführt. Die Abweichung vom bekannten Optimum betrug höchstens
+$3 dot 10^(-10)$, liegt also im Bereich der Rechengenauigkeit. Auch die
+berechneten MST-Längen stimmen mit den in der OR-Library hinterlegten Werten
+überein [max. Abweichung einsetzen]. Zusätzlich wurden zwei Plausibilitäten
+auf allen Läufen geprüft: Die Heuristik war nie kürzer als die exakte Lösung,
+und die Längenschranke veränderte das Ergebnis nie.
+
+=== Laufzeit
+
+// @fig:laufzeit zeigt die Laufzeit in Abhängigkeit von $n$. Für $n = 6$
+// benötigt der exakte Löser etwa 0,2 s, für $n = 7$ etwa 6,8 s und für $n = 8$
+// etwa 146 s. Die Zeit pro Melzak-Aufruf ist dabei nahezu konstant (etwa
+// 0,15 ms für $n = 7$ und $n = 8$); die Laufzeit folgt also direkt der Zahl der
+// Aufrufe aus @sec:melzak. Daraus ergeben sich etwa 1 h für $n = 9$ und etwa
+// 31 h für $n = 10$. Die exakte Lösung durch Aufzählung ist damit ab
+// $n approx 9$ unpraktikabel.
+
+// // #figure(image("laufzeit.pdf", width: 80%),
+// //   caption: [Laufzeit des exakten Lösers und der Heuristik (Median über die
+// //     Seeds), logarithmische Achse.]) <fig:laufzeit>
+
+// === Ursachen und Optimierungen
+
+// Die Kombination der Teilbäume (Phase 2) benötigt weniger als 1 % der
+// Laufzeit; nahezu die gesamte Zeit entfällt auf die Melzak-Konstruktionen.
+// Davon sind 99,9 % vergeblich, da für jede Topologie alle $2^(k-2)$
+// Seitenwahlen getestet werden, von denen höchstens eine gültig ist. Zudem ist
+// nur ein kleiner und schnell sinkender Teil der Topologien überhaupt
+// realisierbar (@fig:anteile): 19 % bei $k = 4$, 3,6 % bei $k = 5$, 0,9 % bei
+// $k = 6$ und 0,09 % bei $k = 7$.
+
+// #figure(image("anteile.pdf", width: 80%),
+//   caption: [Anteil realisierbarer Topologien und gültiger Seitenwahlen je
+//     Teilbaumgröße $k$.]) <fig:anteile>
+
+Als Optimierung wurde die Längenschranke aus @juhl2018 umgesetzt: Keine Kante
+eines minimalen Steinerbaums ist länger als die längste Kante des MST. Sie
+änderte die Laufzeit nicht messbar (Unterschiede zwischen −19 % und +9 %
+ohne Trend). Der Grund ist, dass die Kantenlängen erst in der Rückwärtsphase
+bekannt sind; die teure Vorwärtsphase läuft in jedem Fall vollständig.
+Wirksamer wären Maßnahmen, die ganze Topologien oder Seitenwahlen vorab
+ausschließen. Ist die zyklische Reihenfolge der Terminale bekannt, legt sie die
+Seiten eindeutig fest @hwang1986, was den Faktor $2^(k-2)$ beseitigt.
+GeoSteiner geht weiter und verwirft ganze Gruppen von Teilbäumen, meist ohne
+sie zu konstruieren @juhl2018. Auf Implementierungsebene ließen sich zudem das
+Kopieren der Graphen pro Aufruf und das erneute Erzeugen der Topologien für
+jede Teilmenge gleicher Größe vermeiden; am exponentiellen Wachstum ändert das
+nichts.
+
+// === Qualität der Näherung
+
+// Auf den Zufallsinstanzen spart der optimale Steinerbaum je nach $n$ etwa 3 bis
+// 5 % gegenüber dem MST, die Heuristik etwa 3 bis 4,5 % (@fig:ersparnis). Das
+liegt in der Größenordnung der rund 3 %, die @juhl2018 für große
+Zufallsinstanzen angibt, und weit unter der theoretischen Obergrenze von 13,4 %.
+Auf allen 46 Instanzen aus estein1 ist die Heuristik im Mittel 0,8 % und
+höchstens 7,5 % länger als das Optimum. [Ergebnis für estein10 bis
+estein100 ergänzen: mittlere und maximale Abweichung, ggf. Trend mit $n$.]
+
+// #figure(image("ersparnis.pdf", width: 80%),
+//   caption: [Ersparnis gegenüber dem MST für den exakten Löser und die
+//     Heuristik.]) <fig:ersparnis>
 
 = Rektilineares Steinerbaum-Problem
 
