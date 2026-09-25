@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 
 from steiner_graph.benchmark import CSV_PATH
 
-FIGURE_DIR = Path("results")
+FIGURE_DIR = Path("paper_sync/images/benchmarks")
 
 EXACT_COLOUR = "#1b3a6b"
 APPROXIMATION_COLOUR = "#e8590c"
@@ -22,6 +22,9 @@ GRID_COLOUR = "#eef1f4"
 GUIDE_COLOUR = "#adb5bd"
 
 COLOURS = {"exact": EXACT_COLOUR, "approximation": APPROXIMATION_COLOUR}
+
+FONT_SIZE = 17
+"""Plotly defaults to 12; the figures are scaled down in the paper, so they need more."""
 
 
 def load(path: Path = CSV_PATH) -> pd.DataFrame:
@@ -37,32 +40,19 @@ def predicted_operations(vertex_count: int, terminal_count: int) -> float:
     return vertex_count**3 + enumeration
 
 
-def _style(figure: go.Figure, caption: str, x_title: str, y_title: str) -> go.Figure:
-    """Axis titles, legend above the plot, caption underneath it.
+def _style(figure: go.Figure, x_title: str, y_title: str) -> go.Figure:
+    """Axis titles and legend only.
 
-    The caption sits below the plot like a figure caption in a paper, and has to say on its
-    own what is shown and what the symbols mean.
+    The figures carry no caption of their own: they are placed in the paper, where the
+    caption is written in German next to the figure.
     """
-    lines = caption.count("<br>") + 1
-
     figure.update_layout(
         xaxis_title=x_title,
         yaxis_title=y_title,
         plot_bgcolor="white",
-        margin=dict(l=70, r=30, t=50, b=70 + 19 * lines),
+        font=dict(size=FONT_SIZE),
+        margin=dict(l=90, r=30, t=60, b=80),
         legend=dict(orientation="h", yanchor="bottom", y=1.0, xanchor="left", x=0.0),
-    )
-    figure.add_annotation(
-        text=caption,
-        xref="paper",
-        yref="paper",
-        x=0.0,
-        y=-0.16,
-        xanchor="left",
-        yanchor="top",
-        align="left",
-        showarrow=False,
-        font=dict(size=13),
     )
     figure.update_xaxes(gridcolor=GRID_COLOUR, zeroline=False)
     figure.update_yaxes(gridcolor=GRID_COLOUR, zeroline=False)
@@ -85,8 +75,6 @@ def runtime_by_terminals(measurements: pd.DataFrame) -> go.Figure:
     """Runtime against the number of terminals, the axis the exact algorithm struggles with."""
     sweep = _rows_of(measurements, "terminals")
     medians = _median_by(sweep, "terminal_count")
-    vertex_count = int(sweep["vertex_count"].iloc[0])
-
     measured = sorted(set(sweep["terminal_count"]))
 
     figure = go.Figure()
@@ -110,25 +98,18 @@ def runtime_by_terminals(measurements: pd.DataFrame) -> go.Figure:
         set(sweep["terminal_count"]) - set(sweep[sweep["algorithm"] == "exact"]["terminal_count"])
     )
     if missing:
+        # the exact algorithm was not run here; the caption says why
         figure.add_vrect(
             x0=min(missing) - 0.5,
             x1=max(missing) + 0.5,
             fillcolor=GUIDE_COLOUR,
             opacity=0.15,
             line_width=0,
-            annotation_text="too large to solve exactly",
-            annotation_position="top left",
         )
 
     figure.update_yaxes(type="log")
     return _style(
         figure,
-        "<b>Runtime of the exact algorithm and of the 2-approximation</b><br>"
-        "<b>against the number of terminals</b><br>"
-        f"<sub>Random graphs with n={vertex_count} vertices and edge probability p=0.3.<br>"
-        "r = number of terminals the tree has to connect; points are medians of 5 graphs.<br>"
-        "The exact algorithm is missing where it would enumerate more than 60,000 subsets."
-        "</sub>",
         "number of terminals r",
         "seconds (log scale)",
     )
@@ -169,10 +150,6 @@ def runtime_by_vertices(measurements: pd.DataFrame) -> go.Figure:
 
     return _style(
         figure,
-        "<b>Runtime against graph size, at 4 terminals and edge probability 0.3</b><br>"
-        "<sub>n = number of vertices; points are medians of 5 random graphs per size.<br>"
-        "Dashed lines are power law fits over all points. The analysis predicts exponent 3<br>"
-        "for the exact algorithm, since it computes all-pairs shortest paths.</sub>",
         "number of vertices n (log scale)",
         "seconds (log scale)",
     )
@@ -199,11 +176,6 @@ def runtime_by_density(measurements: pd.DataFrame) -> go.Figure:
     figure.update_yaxes(type="log")
     return _style(
         figure,
-        "<b>Runtime against how densely the graph is connected, at fixed size</b><br>"
-        "<sub>p = probability that a given pair of vertices is joined by an edge, so p=1 is<br>"
-        "the complete graph. Random graphs with n=20 vertices and r=5 terminals; points<br>"
-        "are medians of 5 graphs. The exact algorithm is flat because it works on the<br>"
-        "all-pairs distance matrix, whose size depends on the vertex count alone.</sub>",
         "edge probability p",
         "seconds (log scale)",
     )
@@ -249,60 +221,66 @@ def measured_against_prediction(measurements: pd.DataFrame) -> go.Figure:
     figure.update_yaxes(type="log")
     return _style(
         figure,
-        "<b>Measured runtime of the exact algorithm against the work its analysis predicts</b><br>"
-        "<sub>One point per run, pooled over all sweeps. Predicted work is n³ for the<br>"
-        "all-pairs shortest paths plus one spanning tree per enumerated subset, with<br>"
-        "n = vertices, r = terminals, |S| = n−r Steiner vertices, i = subset size and<br>"
-        "k = r+i vertices per spanning tree. A fitted exponent of 1 would mean the<br>"
-        "analysis explains the measured runtime exactly.</sub>",
         "predicted operations  n³ + Σ C(|S|,i)·k²  (log scale)",
         "seconds (log scale)",
     )
 
 
 def quality_by_terminals(measurements: pd.DataFrame) -> go.Figure:
-    """How much heavier the approximation is, wherever the optimum is known."""
-    paired = measurements.pivot_table(
-        index=["sweep", "vertex_count", "terminal_count", "edge_probability", "seed"],
-        columns="algorithm",
-        values="weight",
+    """How much heavier the approximation is than the optimum, per instance.
+
+    Taken from the terminal sweep, where the graph size is fixed, so that the trend along
+    the axis is one of the terminal count alone. Every instance is drawn rather than an
+    average, which keeps the outliers visible; the points are jittered horizontally because
+    the terminal count is an integer and many instances sit at exactly 1.0, where they would
+    otherwise hide each other.
+    """
+    sweep = _rows_of(measurements, "terminals")
+    paired = sweep.pivot_table(
+        index=["terminal_count", "seed"], columns="algorithm", values="weight"
     ).dropna()
     paired["ratio"] = paired["approximation"] / paired["exact"]
     paired = paired.reset_index()
 
+    # the mean rather than the median: most instances are solved optimally, so the median
+    # sits at exactly 1.0 for most terminal counts and shows no trend at all
+    averages = paired.groupby("terminal_count", as_index=False)["ratio"].mean()
+    jitter = np.random.default_rng(seed=0).uniform(-0.28, 0.28, len(paired))
+
     figure = go.Figure()
     figure.add_trace(
         go.Scatter(
-            x=paired["terminal_count"] + np.random.uniform(-0.15, 0.15, len(paired)),
+            x=paired["terminal_count"] + jitter,
             y=paired["ratio"],
             mode="markers",
-            name="instance",
-            marker=dict(color=APPROXIMATION_COLOUR, size=8, opacity=0.55),
+            name="single instance",
+            marker=dict(color=APPROXIMATION_COLOUR, size=9, opacity=0.6),
+            hovertemplate="r=%{x:.0f}, ratio=%{y:.3f}<extra></extra>",
+        )
+    )
+    figure.add_trace(
+        go.Scatter(
+            x=averages["terminal_count"],
+            y=averages["ratio"],
+            mode="lines",
+            name="mean of 5 instances",
+            line=dict(color=EXACT_COLOUR, width=2),
         )
     )
     figure.add_hline(y=1.0, line=dict(color=GUIDE_COLOUR, dash="dash"))
-    figure.add_annotation(
-        x=paired["terminal_count"].max(), y=1.0, text="optimum", showarrow=False, yshift=-12
-    )
 
-    optimal = (paired["ratio"] == 1.0).mean()
     return _style(
         figure,
-        "<b>How much heavier the 2-approximation is than the optimal Steiner tree</b><br>"
-        f"<sub>One point per instance, {len(paired)} instances pooled over all sweeps and<br>"
-        "jittered horizontally so that equal values stay visible. r = number of terminals.<br>"
-        f"A ratio of 1.0 means the approximation found an optimal tree ({optimal:.0%} of<br>"
-        "instances); the algorithm guarantees at most 2.0.</sub>",
         "number of terminals r",
         "approximate weight / optimal weight",
     )
 
 
 FIGURES = {
-    "runtime_by_terminals": runtime_by_terminals,
+    "measured_against_prediction": measured_against_prediction,
     "runtime_by_vertices": runtime_by_vertices,
     "runtime_by_density": runtime_by_density,
-    "measured_against_prediction": measured_against_prediction,
+    "runtime_by_terminals": runtime_by_terminals,
     "quality_by_terminals": quality_by_terminals,
 }
 
