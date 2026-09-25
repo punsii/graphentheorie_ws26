@@ -11,8 +11,6 @@
   version: "1",
 )
 
-#pagebreak()
-
 // Quelltextauszüge etwas kleiner setzen, damit die Zeilen nicht umbrechen
 #show raw.where(block: true): set text(size: 9pt)
 
@@ -75,9 +73,22 @@ Aufwand der exakten Lösung nicht nur abzuschätzen, sondern zu messen, wurde de
 Melzak-Algorithmus mit einer Aufzählung aller Topologien selbst implementiert
 und mit einer einfachen Heuristik verglichen. Zur Validierung dienen
 Testinstanzen der OR-Library mit bekannten Optima @beasley1990.
-[Nicht ergiebige Quellen ergänzen.]
 
 = Problemtaxonomie
+
+Allen Varianten gemeinsam ist die gleiche Aufgabe. Gegeben ist eine Menge von Punkten, die
+sogenannten Terminalknoten, gesucht ist ein Baum minimaler Gesamtlänge, der sie alle
+verbindet. Die Varianten unterscheiden sich in zwei Punkten, nämlich darin, wo die
+Steiner-Punkte liegen dürfen und wie die Länge einer Verbindung gemessen wird.
+
+Beim euklidischen Problem liegen die Terminalknoten in der Ebene, die Steiner-Punkte dürfen
+an beliebiger Stelle hinzukommen und gemessen wird mit dem gewöhnlichen Abstand
+@gilbert1968. Das rektilineare Problem übernimmt diese freie Lage, misst aber in der
+$L_1$-Metrik @hanan1966. Beim Problem in Graphen ist die Auswahl von vornherein
+eingeschränkt, denn als Steiner-Punkte kommen nur die Knoten eines gegebenen Graphen in
+Frage.
+
+Der Hauptteil behandelt die drei Varianten in dieser Reihenfolge.
 
 #align(center)[
   #table(
@@ -87,6 +98,7 @@ Testinstanzen der OR-Library mit bekannten Optima @beasley1990.
     column-gutter: 1em,
     [$(G, w)$], [Netzwerk aus einem zusammenhängenden Graphen $G = (V, E)$ und einer
       positiven Gewichtsfunktion $w$],
+    [$n = |V|$], [Anzahl der Knoten],
     [$R subset.eq V$], [Menge der Terminalknoten, die der Baum verbinden muss],
     [$r = |R|$], [Anzahl der Terminalknoten],
     [$S = V without R$], [Steiner-Knoten: Knoten, die verwendet werden dürfen, aber nicht
