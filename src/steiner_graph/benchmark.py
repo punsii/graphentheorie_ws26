@@ -21,7 +21,7 @@ ALGORITHMS = {"exact": steiner, "approximation": approximate_steiner}
 SEEDS = range(5)
 """Repetitions per parameter point; the seed also makes every row reproducible."""
 
-MAX_SUBSETS = 60_000
+MAX_SUBSETS = 300_000
 """Parameter points whose enumeration is larger than this are not run exactly.
 
 Deciding by the predicted amount of work rather than by a measured timeout keeps the sweep
@@ -71,6 +71,7 @@ def build(vertex_count: int, edge_probability: float, terminal_count: int, seed:
 def _sweep(
     name: str,
     points: list[tuple[int, float, int]],
+    seeds: range = SEEDS,
 ) -> Iterator[dict]:
     """Measure both algorithms over the given parameter points.
 
@@ -81,7 +82,7 @@ def _sweep(
     for vertex_count, edge_probability, terminal_count in points:
         affordable = predicted_subsets(vertex_count, terminal_count) <= MAX_SUBSETS
 
-        for seed in SEEDS:
+        for seed in seeds:
             instance = build(vertex_count, edge_probability, terminal_count, seed)
 
             yield measure("approximation", instance, name, edge_probability, seed)
@@ -96,9 +97,12 @@ def terminal_sweep(vertex_count: int = 30, edge_probability: float = 0.3) -> Ite
     return _sweep("terminals", points)
 
 
-def vertex_sweep(edge_probability: float = 0.3, terminal_count: int = 4) -> Iterator[dict]:
-    """Bigger and bigger graphs with a fixed, small number of terminals."""
-    points = [(n, edge_probability, terminal_count) for n in range(6, 81, 6)]
+def vertex_sweep(edge_probability: float = 0.3, terminal_count: int = 6) -> Iterator[dict]:
+    """Bigger and bigger graphs with a fixed, small number of terminals.
+
+    The upper end is chosen so that the slowest point takes roughly a second.
+    """
+    points = [(n, edge_probability, terminal_count) for n in range(8, 37, 2)]
     return _sweep("vertices", points)
 
 

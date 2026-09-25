@@ -166,7 +166,7 @@ def _vertex_trace(
         mode="markers+text",
         marker=dict(color=fill, symbol="circle", size=size, line=dict(color=outline, width=1.5)),
         text=[str(vertex) for vertex in ordered],
-        textfont=dict(color=text_colour, family=FONT, size=13),
+        textfont=dict(color=text_colour, family=FONT, size=18),
         textposition="middle center",
         name=name,
         hoverinfo="text",
@@ -184,7 +184,7 @@ def _weight_labels(edges: Iterable[Edge], positions: Positions) -> list[dict]:
                 y=(start[1] + end[1]) / 2,
                 text=f"<i>{edge.weight:g}</i>",
                 showarrow=False,
-                font=dict(size=12, family=FONT, color=WEIGHT_COLOUR),
+                font=dict(size=17, family=FONT, color=WEIGHT_COLOUR),
                 bgcolor="rgba(255,255,255,0.85)",
             )
         )
