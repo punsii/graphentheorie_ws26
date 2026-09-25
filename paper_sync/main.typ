@@ -480,13 +480,25 @@ Komplexitätsklasse, da der Aufwand mit wachsendem $n$ und $r$ weiterhin explodi
 
 = Nebenbemerkung: Dreyfus-Wagner
 
-// O(3^r · n + 2^r · n² + n³), also polynomiell, wenn die Anzahl der Terminalknoten
-// logarithmisch in n ist. Der Gegensatz ist der interessante Teil: das hier implementierte
-// Verfahren ist exponentiell in |S| = n − r, Dreyfus-Wagner dagegen in r. Daraus erklärt
-// sich die Form der gemessenen Laufzeitkurve.
-// Quelle: @dreyfus1971
+Das hier umgesetzte Verfahren ist nicht das einzige exakte. Bekannt ist auch der Ansatz von
+Dreyfus und Wagner @dreyfus1971, der stattdessen über Teilmengen der
+Terminalknoten iteriert und durch dynamische Programmierung Lösungskandidaten findet.
+Er läuft in $O(3^r dot n + 2^r dot n^2 + n^3)$ @cygan2015. Es kann gezeigt werden, dass
+das Verfahren eine polynomielle Laufzeit hat, solange die Anzahl der Terminalknoten nur
+logarithmisch mit der Knotenzahl steigt.
 
-= Ausblick: Approximationsverfahren in der Praxis
+Der Vergleich ist aufschlussreich, weil beide Verfahren exponentiell sind, aber in
+verschiedenen Größen. Dreyfus-Wagner wächst in der Anzahl der Terminalknoten $r$, Algorithmus 4.6.3
+dagegen in der Anzahl der Steiner-Knoten $|S| = n - r$. Die beiden sind damit in genau
+entgegengesetzten Bereichen effizient.
+
+Es liegt nahe, daraus ein Verfahren zu bauen, das zu Beginn beide Schranken
+vergleicht und jeweils das günstigere Vorgehen wählt. Der Aufwand beträgt dann
+$ O(n^3 + min(2^(n - r) dot r^2, 3^r dot n)). $
+Praktisch wäre das ein Gewinn, polynomiell wird es dadurch aber nicht. Dreyfus-Wagner ist nur
+polynomiell, solange $r$ logarithmisch in $n$ bleibt, die Aufzählung nur, solange $n - r$
+logarithmisch bleibt. Wachsen die Anzahl an Terminalknoten $r$ und die Anzahl an Steinerknoten $n - r$
+gleichermaßen, bleibt auch das Minimum der beiden Schranken exponentiell.
 
 = Eigenimplementierung und Vergleich mit Standardbibliothek
 
