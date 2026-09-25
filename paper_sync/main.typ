@@ -70,6 +70,23 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 = Problemtaxonomie
 
+#align(center)[
+  #table(
+    columns: 2,
+    stroke: none,
+    align: (right, left),
+    column-gutter: 1em,
+    [$(G, w)$], [Netzwerk aus einem zusammenhängenden Graphen $G = (V, E)$ und einer
+      positiven Gewichtsfunktion $w$],
+    [$R subset.eq V$], [Menge der Terminalknoten, die der Baum verbinden muss],
+    [$r = |R|$], [Anzahl der Terminalknoten],
+    [$S = V without R$], [Steiner-Knoten: Knoten, die verwendet werden dürfen, aber nicht
+      müssen],
+    [$S' subset.eq S$], [die jeweils betrachtete Teilmenge der Steiner-Knoten],
+    [$w(T)$], [Gewicht einer Kantenmenge $T$, also $sum_(e in T) w(e)$],
+  )
+]
+
 // Kurz halten. Der Hauptteil folgt der hier gesetzten Reihenfolge: euklidisch,
 // rektilinear, Graphen.
 // Hier einmalig die Notation einführen, sie gilt für alle drei Varianten: Netzwerk (G, w)
