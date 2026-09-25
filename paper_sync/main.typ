@@ -407,49 +407,76 @@ Kante vorhanden, weshalb jede Knotenteilmenge zusammenhängend ist und immer ein
 
 == Laufzeitanalyse
 
+Insgesamt ergibt sich
+$ O(|V|^3 + 2^(|S|) dot |R|^2). $
+Der erste Summand stammt aus der Berechnung der kürzesten Wege, der zweite aus der
+Aufzählung aller Teilmengen von Steinerknoten und der für jede davon nötigen Berechnung
+eines minimalen Spannbaums.
+Die folgenden Abschnitte begründen die einzelnen Anteile.
+
 === Floyd-Warshall
 
-// Quellen: @floyd1962, @warshall1962
+Die kürzesten Wege zwischen allen Knotenpaaren berechnet das Verfahren von Floyd und
+Warshall @floyd1962 @warshall1962. Es besteht aus drei geschachtelten Schleifen über alle
+Knoten und kostet damit $O(|V|^3)$, unabhängig davon, wie viele Kanten der Graph hat. Es
+läuft genau einmal vor der Aufzählung, denn die Abstände ändern sich nicht mehr.
+Neben den Abständen liefert der Algorithmus auch die tatsächlich gewählten Pfade zwischen
+allen Knoten in Form einer Vorgängertabelle, was die Komplexität allerdings nicht erhöht.
 
 === Prim
 
-// Quelle: @prim1957
+Für die Spannbäume kommt eine Variante des Verfahrens von Prim @prim1957 zum Einsatz.
+In jedem Schritt wird derjenige noch nicht aufgenommene Knoten
+gewählt, der dem bisherigen Baum am nächsten liegt und anschließend werden die Abstände der
+übrigen Knoten aktualisiert. Bei $k$ Knoten sind das $k$ Durchläufe mit je $O(k)$ Aufwand,
+insgesamt also $O(k^2)$.
+Innerhalb der Aufzählung wird dabei keine Wegsuche mehr ausgeführt. Die Abstände liegen
+bereits aus dem ersten Schritt vor und jeder Eintrag der Tabelle ist selbst ein kürzester
+Weg, sodass ein Umweg über weitere Knoten nie kürzer sein kann. Der ursprüngliche Graph
+wird also nicht mehr benötigt und Prim vergleicht nur noch Tabelleneinträge. Da die Tabelle
+einem vollständigen Graphen mit $k(k-1)/2$ Kanten entspricht, ist das einfache Absuchen mit
+$O(k^2)$ günstiger als eine Prioritätswarteschlange, die auf $O(k^2 log k)$ käme.
+
+Mit $k = |R union S'| <= 2r - 2$ hängt dieser Aufwand allein von der Anzahl der
+Terminalknoten ab, nicht von der Größe des Graphen. Das erklärt den Faktor $|R|^2$ in der
+Gesamtkomplexität.
 
 === Anzahl der aufgezählten Teilmengen
 
-// Summe über C(|S|, i) für i ≤ r − 2.
+Aufgezählt werden alle Teilmengen $S' subset.eq S$ mit $|S'| <= r - 2$, also
+$ sum_(i = 0)^(r - 2) binom(|S|, i) $
+Stück. Nach oben ist das durch $2^(|S|)$ beschränkt. Entscheidend für das gemessene Verhalten
+ist, dass hier $|S| = n - r$ steht und nicht $n$. Je mehr Terminalknoten es gibt, desto
+weniger Steiner-Knoten bleiben übrig, über die aufgezählt werden könnte.
 
 === Pfadrekonstruktion
 
-// Von der metrischen Hülle zurück in den ursprünglichen Graphen.
+Die Kanten des gefundenen Spannbaums sind Kanten der metrischen Hülle. Sie stehen für
+kürzeste Wege im ursprünglichen Graphen und müssen zum Schluss wieder durch diese ersetzt
+werden. Dazu wird mit der Vorgängertabelle Kante für Kante rückwärts gelaufen, bis der
+Startknoten erreicht ist.
 
-=== Warum Prim und nicht Kruskal
+Da dieser Schritt nur ein einziges Mal läuft, nämlich nach der Aufzählung,
+fällt er für das Laufzeitverhalten nicht ins Gewicht. Der Baum besteht aus höchstens $2r - 3$ Kanten, jeder
+eingesetzte Weg ist höchstens $|V| - 1$ Kanten lang und jede davon kostet einen Zugriff auf
+die Tabelle, was $O(r dot |V|)$ Operationen ergibt.
 
-// Die metrische Hülle ist vollständig. Array-Prim kostet dort O(k²), Kruskal zahlt
-// zusätzlich einen Logarithmus für das Sortieren der k(k−1)/2 Kanten, und das einmal pro
-// aufgezählter Teilmenge.
-// Quellen: @prim1957, @kruskal1956
 
 === Metrische Hülle und der Zusammenhang der Teilmengen
 
-// In der vollständigen metrischen Hülle induziert jede Knotenteilmenge einen
-// zusammenhängenden Teilgraphen. Es existiert also immer ein Spannbaum und der
-// Zusammenhang muss pro Teilmenge nicht geprüft werden, was das Aufzählen über S' erst
-// einfach macht.
+Im ursprünglichen Graphen muss eine beliebig gewählte Knotenteilmenge keinen
+zusammenhängenden Teilgraphen aufspannen. Der Vorteil der metrischen Hülle ist
+dagegen, dass jede Kante vorhanden ist und dadurch auch jede Teilmenge zusammenhängend ist.
+Damit entfällt eine Fallunterscheidung, die die Aufzählung der Teilmengen aufwändiger machen würde.
+Jede Teilmenge liefert einen Spannbaum und die Auswahl beschränkt sich darauf, den
+leichtesten davon zu speichern.
 
-== Optimierung |S'| ≤ r − 2 und warum sie genügt
+== Einfluss der Beschränkung auf $|S'| <= r - 2$
 
-// In einem optimalen Baum dürfen Steiner-Knoten als mindestens dreifach verzweigt
-// angenommen werden. Ein Baum mit r Blättern hat höchstens r − 2 solcher Knoten.
-// Quelle: @jungnickel1999
-
-== Die metrische Hülle als Abstraktion
-
-// Die metrische Hülle muss nicht tatsächlich aufgebaut werden, sie ist eher eine
-// Gedankenstütze. Für die Implementierung genügt Prim eine Teilmenge der Knoten plus die
-// Distanztabelle aus floyd(). Das spart pro Teilmenge den Aufbau von k(k−1)/2
-// Kantenobjekten und zusätzlich das Filtern der Distanztabelle, das mit Θ(n²) nicht mit
-// der Teilmenge, sondern mit dem gesamten Graphen skaliert.
+Die Aufzählung ist nicht über alle Teilmengen von $S$ nötig, sondern nur über solche mit
+höchstens $r - 2$ Elementen @jungnickel1999, was den Aufwand bei wenigen Terminalknoten
+drastisch verkürzt. In der Praxis ist diese Ersparnis erheblich, ändert aber nichts an der
+Komplexitätsklasse, da der Aufwand mit wachsendem $n$ und $r$ weiterhin explodiert.
 
 = Nebenbemerkung: Dreyfus-Wagner
 
@@ -463,7 +490,7 @@ Kante vorhanden, weshalb jede Knotenteilmenge zusammenhängend ist und immer ein
 
 = Eigenimplementierung und Vergleich mit Standardbibliothek
 
-In der Praxis kommen selten exakte Verfahren zum Einsatz, sondern ausgefeiltere
+In der Praxis kommen selten exakte Verfahren zum Einsatz, sondern
 Approximationen, oft in Verbindung mit Reduktionstechniken, die eine Instanz vor der
 eigentlichen Rechnung verkleinern @rehfeldt2023. Diese Verfahren werden hier nicht im Detail
 behandelt.
