@@ -93,6 +93,31 @@ Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich die frage wie na
 // OR-Library @beasley1990 und auf zufällig erzeugten Instanzen.
 
 
+== Grundlagen
+
+=== Vollständige und unvollständige Steinerbäume
+
+
+
+Ein Steinerbaum ist _vollständig_, wenn alle Terminale Blätter sind (Grad 1). Hat mindestens ein Terminal Grad 2 oder 3, ist der Baum
+_unvollständig_. Damit ein unvollständiger Baum optimal sein kann, müssen alle Winkel an diesen Terminalen mindestens 120° sein; sonst könnten wir den Baum durch einen zusätzlichen Steinerknoten verkürzen (siehe ..Beweise TODO). 
+
+Jeder unvollständige Baum lässt sich an seinen Terminalen mit Grad 2 oder 3 in
+vollständige Teilbäume zerlegen @du1992. Für exakte Verfahren genügt es
+daher, vollständige Steinerbäume für Teilmengen der Terminale zu berechnen und
+diese anschließend zu kombinieren.
+
+Beim Berechnen einer vollständigen Topologie kann ein Steinerknoten auf ein
+Terminal fallen. Der Baum ist dann _degeneriert_: Für diese Topologie existiert kein echter
+vollständiger Steinerbaum. Die Kante der Länge 0 lässt sich kontrahieren, und es entsteht ein unvollständiger Baum gleicher Länge. Da die Gesamtlänge bei fester Topologie
+eine konvexe Funktion der Positionen der Steinerknoten ist, ist dieser Baum
+optimal für diese Topologie, aber nicht zwingend global optimal. 
+
+Weil er sich zudem in vollständige Teilbäume kleinerer Teilmengen zerlegen lässt,
+können degenerierte Ergebnisse in exakten Verfahren verworfen werden. 
+
+
+
 == Optimale Lösung
 //für die optimale lösung kann es sein das alle topologien überprüft werden müssen
 // die topologien können dann durch melzak oder .. analysiert werden
