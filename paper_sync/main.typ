@@ -8,6 +8,7 @@
   language: "de",
   bibliography: bibliography("sources.bib"),
   toc-depth: 2,
+  //version: "1",
 )
 
 #pagebreak()
@@ -58,12 +59,24 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 // Quellen: @gilbert1968 (euklidisch), @hanan1966 (rektilinear), @jungnickel1999 (Graphen)
 
 = Euklidisches Steinerbaum-Problem
+// Das Euklidische SBP ist eine Besondere variante des SBP. In dieser können die steinerknoten frei platziert werden. Die kantenlänge ist die Euklidische distanz zwischen zwei Terminalen. Um die Optimale lösung für einen Baum zu finden müssen wir die Topologien durchprobieren, da theoretisch jede Topologie die optimale lösung beinhalten könnte. Das bauen/ platzieren des Baums für eine gewählte Topologie ist dann relativ einfach (Melzak oder ..) genauso wie die minimale länge für diesen zu finden.
+
+// durch die nutzung des eukl. raums einer Plane ergeben sich interessante geometische vorrausetzung dafür das ein Baum optimal sein kann (damit ist erstmal der optimale Baum für eine Topologie gemeint und nicht der gesamt optimale Baum für eine Menge an Terminalen). Durch kluges pruning (Geosteiner) können im Bestenfall viele der Topologien ausgeschlossen werden ohne sie komplett zu kennen, das problem bleibt aber natürlich N(p) schwer.
+
+//um die N(p) laufzeit zu umgehen können wir Aproximationen über effizientere algortihmen nutzen
+
+//Die vermutung das der Steinerbaum maximal wurzel 3/2 besser ist als der MST macht das anwenden der Optimalen Steinerbaum lösung eher unattraktiv, Bewissen wurde aber  erst (0,82 bzw. 0,86)
+
 
 == Optimale Lösung
+//für die optimale lösung kann es sein das alle topologien überprüft werden müssen
+// die topologien können dann durch melzak oder .. analysiert werden
+// 
 
 === Voraussetzungen und Beweis der optimalen Lösung
 
-// Gegebenenfalls Beweis der 120-Grad-Regel bzw. dass Steiner-Punkte drei Verbindungen haben.
+// Gegebenenfalls Beweis der 120-Grad-Regel bzw. dass Steiner-Punkte drei Verbindungen haben. 
+//Regel für unvollst. bzw. vollständige Bäume
 // Quelle: @gilbert1968
 
 === NP-Schwere
@@ -90,6 +103,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 // Quelle: @gilbert1968
 
 == Approximierte Lösung
+// heuristik mit MST und dann 120 grad rgel
 
 === Aktuelle Entwicklungen
 
