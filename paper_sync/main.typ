@@ -97,28 +97,171 @@ Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich die frage wie na
 
 === Vollständige und unvollständige Steinerbäume
 
-
-
-Ein Steinerbaum ist _vollständig_, wenn alle Terminale Blätter sind (Grad 1). Hat mindestens ein Terminal Grad 2 oder 3, ist der Baum
-_unvollständig_. Damit ein unvollständiger Baum optimal sein kann, müssen alle Winkel an diesen Terminalen mindestens 120° sein; sonst könnten wir den Baum durch einen zusätzlichen Steinerknoten verkürzen (siehe ..Beweise TODO). 
+Ein Steinerbaum ist _vollständig_, wenn alle Terminale Blätter sind (Grad 1).
+Hat mindestens ein Terminal Grad 2 oder 3, ist der Baum _unvollständig_. Damit
+ein unvollständiger Baum optimal sein kann, müssen alle Winkel an diesen
+Terminalen mindestens 120° betragen; sonst könnte der Baum durch einen
+zusätzlichen Steinerknoten verkürzt werden (siehe //eignschaften).
 
 Jeder unvollständige Baum lässt sich an seinen Terminalen mit Grad 2 oder 3 in
-vollständige Teilbäume zerlegen @du1992. Für exakte Verfahren genügt es
+vollständige Teilbäume zerlegen @hwang1992. Für exakte Verfahren genügt es
 daher, vollständige Steinerbäume für Teilmengen der Terminale zu berechnen und
 diese anschließend zu kombinieren.
 
 Beim Berechnen einer vollständigen Topologie kann ein Steinerknoten auf ein
-Terminal fallen. Der Baum ist dann _degeneriert_: Für diese Topologie existiert kein echter
-vollständiger Steinerbaum. Die Kante der Länge 0 lässt sich kontrahieren, und es entsteht ein unvollständiger Baum gleicher Länge. Da die Gesamtlänge bei fester Topologie
-eine konvexe Funktion der Positionen der Steinerknoten ist, ist dieser Baum
-optimal für diese Topologie, aber nicht zwingend global optimal. 
-
-Weil er sich zudem in vollständige Teilbäume kleinerer Teilmengen zerlegen lässt,
-können degenerierte Ergebnisse in exakten Verfahren verworfen werden. 
-
+Terminal fallen, sodass die Kante zwischen beiden die Länge 0 hat. Der Baum ist
+dann _degeneriert_: Für diese Topologie existiert damm kein echter vollständiger
+Steinerbaum. Die Kante der Länge 0 lässt sich kontrahieren, und es entsteht ein
+unvollständiger Baum gleicher Länge. Dieser ist der kürzeste Baum, der sich mit
+der ursprünglichen Topologie erreichen lässt, muss aber nicht Global optimal sein.
+Da er sich wiederum in vollständige Teilbäume kleinerer Teilmengen zerlegen lässt, die ohnehin betrachtet werden, können degenerierte Ergebnisse in exakten Verfahren verworfen werden.
 
 
-== Optimale Lösung
+=== Eigenschaften optimaler Lösungen <sec:eigenschaften>
+
+// === Eigenschaften optimaler Lösungen    
+
+//  Für die Optimale lösung einer Topologie müssen alle Winkel zwischen Kanten mindestens 120 grad haben, desweiteren sind alle Steinerknoten Grad 3. Falls es einen Vollständigen Optimalen Baum besitzt dieser für n Terminale = n - 2 Steinerknoten, für denn unvollständigen fall sinde es maximal n - 2 Steinerknoten
+
+Ein minimaler Steinerbaum erfüllt die folgenden notwendigen Eigenschaften
+@gilbert1968:
+
++ *Winkel:* An jedem Knoten schließen je zwei Kanten einen Winkel von
+  mindestens 120° ein.
++ *Grad:* Jeder Steinerknoten hat genau Grad 3; die Winkel zwischen seinen
+  Kanten betragen also genau 120°. Terminale haben höchstens Grad 3.
++ *Anzahl:* Bei $n$ Terminalen gibt es höchstens $n - 2$ Steinerknoten, in
+  einem vollständigen Baum genau $n - 2$.
+
+_Begründung._ (1) Schließen zwei Kanten $v a$ und $v b$ einen Winkel unter
+120° ein, ist $v$ nicht der Fermat-Punkt des Dreiecks $v a b$. Ersetzt man die
+beiden Kanten durch Verbindungen von $v$, $a$ und $b$ zum Fermat-Punkt, wird
+der Baum echt kürzer. (2) Ein Steinerknoten mit Grad 1 kann entfernt werden,
+einer mit Grad 2 lässt sich nach der Dreiecksungleichung durch eine gerade
+Kante ersetzen. Ab Grad 4 summieren sich mindestens vier Winkel zu 360°,
+sodass einer höchstens 90° beträgt, im Widerspruch zu (1). Dasselbe Argument
+begrenzt den Grad der Terminale. (3) Ein Baum mit $n$ Terminalen und $s$
+Steinerknoten hat $n + s - 1$ Kanten. Da jede Kante zwei Endpunkte hat, gilt
+für die Gradsumme
+$ sum_(t in R) deg(t) + 3s = 2(n + s - 1), quad "also" quad
+  s = n - 2 - sum_(t in R) (deg(t) - 1). $
+Da jedes Terminal mindestens Grad 1 hat, folgt $s <= n - 2$, mit Gleichheit
+genau dann, wenn alle Terminale Blätter sind.
+
+Diese Eigenschaften gelten für den global optimalen Baum. Für den kürzesten
+Baum einer _festen_ Topologie gilt nur die 120°-Regel an den (nicht
+degenerierten) Steinerknoten. Liegt dort an einem Terminal ein Winkel unter
+120°, zeigt das, dass eine andere Topologie kürzer ist.
+
+=== Anzahl der Topologien <sec:topologien>
+
+// === Anzahl der Topologien 
+// Zur veranschaulichung der vollen Topologien, wir starten mit Genau einer Topologie für 3 Terminale, wenn wir jetzt ein weiteres Terminal hinzufügen, trennen wir eine beliebige kante mit einem neuen Steinerknoten an denn wir das Terminal hängen. Das heißt in unserem fall sind das 3 möglichkeiten für einen weiteres Terminal schon die 3 möglichkeiten mal weiter 5 also schon 15. 
+// (2n − 5)!! - superfakultät weil wir von 3 kanten direkt auf 5 kanten kommen etc. und superexponentiel
+
+// Für unvollständige Topologien gibt es nochmal xy z .... 
+
+Vollständige Topologien bauen wir schrittweise auf @hwang1992. Eine
+vollständige Topologie mit $k - 1$ Terminalen hat $2k - 5$ Kanten. Um das
+$k$-te Terminal hinzuzufügen, wird eine beliebige Kante durch einen neuen
+Steinerknoten geteilt und das Terminal dort angehängt; dafür gibt es $2k - 5$
+Möglichkeiten.
+// Umgekehrt entsteht jede vollständige Topologie mit $k$
+// Terminalen auf genau eine Weise, denn entfernt man das Terminal $k$ und seinen
+// Steinerknoten, erhält man die Vorgänger-Topologie eindeutig zurück. 
+Damit gibt
+es
+$ product_(k=4)^n (2k - 5) = 1 dot 3 dot 5 dot dots dot (2n - 5) = (2n - 5)!! $
+vollständige Topologien (Doppelfakultät). Da jeder Schritt mit einem
+wachsenden Faktor multipliziert, wächst die Anzahl schneller als jede
+Exponentialfunktion $c^n$.
+
+Lässt man auch unvollständige Topologien zu, steigt die Zahl nochmals deutlich
+(@tab:topologien, eigene Berechnung). Exakte Verfahren zählen diese jedoch
+nicht direkt auf: Da jeder unvollständige Baum in vollständige Teilbäume
+zerfällt, genügt es, vollständige Topologien für alle Teilmengen der
+Terminale zu betrachten und diese zu kombinieren. Die Zahl dieser Kandidaten
+$sum_(k=2)^n binom(n, k) (2k - 5)!!$ (mit einer einzelnen Kante für $k = 2$)
+ist um Größenordnungen kleiner.
+
+#figure(
+  table(
+    columns: 4,
+    align: right,
+    table.header([$n$], [vollständig], [alle Topologien], [Teilbaum-Kandidaten]),
+    [4], [3], [31], [13],
+    [6], [105], [5.625], [275],
+    [8], [10.395], [2.643.795], [22.029],
+    [10], [2.027.025], [2.382.538.725], [3.986.175],
+  ),
+  caption: [Anzahl vollständiger Topologien, aller Topologien (Steinerknoten
+    mit Grad 3, Terminale mit Grad höchstens 3) und vollständiger Teilbäume
+    über alle Teilmengen der Terminale.],
+) <tab:topologien>
+
+
+== Exakte Lösung <sec:eukl-exakt>  
+
+
+=== Algorithmus von Melzak <sec:melzak>
+
+Melzak zeigte als Erster, dass sich das euklidische Steinerbaumproblem in
+endlich vielen Schritten exakt lösen lässt @melzak1961. Sein Verfahren besteht
+aus zwei Teilen: einer geometrischen Konstruktion, die für eine feste
+vollständige Topologie den optimalen Baum liefert, und einer Suche über alle
+Topologien.
+
+==== Konstruktion für eine feste Topologie
+
+_Vorwärts._ Hat ein Steinerknoten $s$ zwei Nachbarn $a$ und $b$ mit bekannter
+Position, wird über der Strecke $a b$ ein gleichseitiges Dreieck errichtet.
+Seine dritte Ecke $e$ ersetzt $a$, $b$ und $s$ und wird mit dem dritten
+Nachbarn $c$ von $s$ verbunden. Die Länge bleibt dabei erhalten: Für jeden
+Punkt $s$ auf dem Kreisbogen über $a b$ gegenüber von $e$ gilt
+$|s a| + |s b| = |s e|$. Die Ecke $e$ muss auf der vom Rest des Baums
+abgewandten Seite von $a b$ liegen. Da diese Seite ohne die Positionen der
+übrigen Steinerknoten nicht bekannt ist, werden beide Seiten getestet. Nach
+$k - 2$ Schritten bleibt eine einzige Kante übrig, deren Länge der Länge des
+gesamten Baums entspricht.
+
+_Rückwärts._ Die Schritte werden in umgekehrter Reihenfolge rückgängig
+gemacht. Der Steinerknoten $s$ liegt jeweils im Schnittpunkt der Strecke $e c$
+mit dem Umkreis des Dreiecks $a b e$. Liegt dieser Schnittpunkt nicht auf der
+Strecke oder nicht auf dem Bogen zwischen $a$ und $b$, existiert für diese
+Seitenwahl kein gültiger Baum. Scheitern alle Seitenwahlen, ist die Topologie
+nicht realisierbar und wird verworfen.
+
+==== Vom vollständigen Teilbaum zum optimalen Baum
+
+Da jeder Steinerbaum in vollständige Teilbäume zerfällt
+(TODO), wird zunächst für jede Teilmenge $X$ der Terminale der
+beste vollständige Teilbaum $"FST"(X)$ bestimmt. Der optimale Baum für $X$ ist
+dann entweder dieser vollständige Teilbaum oder die Vereinigung zweier optimaler
+Bäume, die sich genau ein Terminal teilen:
+$ "Best"(X) = min lr({ "FST"(X), min_(t in X, A union B = X, A inter B = {t})
+  "Best"(A) + "Best"(B) }). $
+Die Implementierung berechnet dies als dynamische Programmierung von kleinen
+zu großen Teilmengen, sodass jedes Ergebnis nur einmal berechnet wird.
+
+==== Laufzeit
+
+Für eine Topologie mit $k$ Terminalen sind $k - 2$ Reduktionsschritte nötig,
+mit dem Testen beider Seiten also $O(k dot 2^(k-2))$ Operationen. Ist die
+zyklische Reihenfolge der Terminale im Baum bekannt, legt sie die Seiten
+eindeutig fest, und die Konstruktion gelingt in $O(k)$ @hwang1986. Über alle
+Teilmengen ergeben sich
+$ sum_(k=2)^n binom(n, k) (2k - 5)!! dot 2^(k-2) $
+Konstruktionen. Die anschließende Kombination betrachtet
+$sum_k binom(n, k) dot k dot 2^(k-1) = n dot 3^(n-1)$ Aufteilungen und ist
+damit vergleichsweise günstig. Die Laufzeit wird also von der
+superexponentiellen Zahl der Topologien dominiert.
+
+
+
+
+
+
+=== Optimale Lösung
 //für die optimale lösung kann es sein das alle topologien überprüft werden müssen
 // die topologien können dann durch melzak oder .. analysiert werden
 // 
