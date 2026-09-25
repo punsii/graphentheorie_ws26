@@ -378,31 +378,31 @@ und die Längenschranke veränderte das Ergebnis nie.
 
 === Laufzeit
 
-// @fig:laufzeit zeigt die Laufzeit in Abhängigkeit von $n$. Für $n = 6$
-// benötigt der exakte Löser etwa 0,2 s, für $n = 7$ etwa 6,8 s und für $n = 8$
-// etwa 146 s. Die Zeit pro Melzak-Aufruf ist dabei nahezu konstant (etwa
-// 0,15 ms für $n = 7$ und $n = 8$); die Laufzeit folgt also direkt der Zahl der
-// Aufrufe aus @sec:melzak. Daraus ergeben sich etwa 1 h für $n = 9$ und etwa
-// 31 h für $n = 10$. Die exakte Lösung durch Aufzählung ist damit ab
-// $n approx 9$ unpraktikabel.
+@fig:laufzeit zeigt die Laufzeit in Abhängigkeit von $n$. Für $n = 6$
+benötigt der exakte Löser etwa 0,2 s, für $n = 7$ etwa 6,8 s und für $n = 8$
+etwa 146 s. Die Zeit pro Melzak-Aufruf ist dabei nahezu konstant (etwa
+0,15 ms für $n = 7$ und $n = 8$); die Laufzeit folgt also direkt der Zahl der
+Aufrufe aus @sec:melzak. Daraus ergeben sich etwa 1 h für $n = 9$ und etwa
+31 h für $n = 10$. Die exakte Lösung durch Aufzählung ist damit ab
+$n approx 9$ unpraktikabel.
 
-// // #figure(image("laufzeit.pdf", width: 80%),
-// //   caption: [Laufzeit des exakten Lösers und der Heuristik (Median über die
-// //     Seeds), logarithmische Achse.]) <fig:laufzeit>
+#figure(image("laufzeit.pdf", width: 80%),
+  caption: [Laufzeit des exakten Lösers und der Heuristik (Median über die
+    Seeds), logarithmische Achse.]) <fig:laufzeit>
 
-// === Ursachen und Optimierungen
+=== Ursachen und Optimierungen
 
-// Die Kombination der Teilbäume (Phase 2) benötigt weniger als 1 % der
-// Laufzeit; nahezu die gesamte Zeit entfällt auf die Melzak-Konstruktionen.
-// Davon sind 99,9 % vergeblich, da für jede Topologie alle $2^(k-2)$
-// Seitenwahlen getestet werden, von denen höchstens eine gültig ist. Zudem ist
-// nur ein kleiner und schnell sinkender Teil der Topologien überhaupt
-// realisierbar (@fig:anteile): 19 % bei $k = 4$, 3,6 % bei $k = 5$, 0,9 % bei
-// $k = 6$ und 0,09 % bei $k = 7$.
+Die Kombination der Teilbäume (Phase 2) benötigt weniger als 1 % der
+Laufzeit; nahezu die gesamte Zeit entfällt auf die Melzak-Konstruktionen.
+Davon sind 99,9 % vergeblich, da für jede Topologie alle $2^(k-2)$
+Seitenwahlen getestet werden, von denen höchstens eine gültig ist. Zudem ist
+nur ein kleiner und schnell sinkender Teil der Topologien überhaupt
+realisierbar (@fig:anteile): 19 % bei $k = 4$, 3,6 % bei $k = 5$, 0,9 % bei
+$k = 6$ und 0,09 % bei $k = 7$.
 
-// #figure(image("anteile.pdf", width: 80%),
-//   caption: [Anteil realisierbarer Topologien und gültiger Seitenwahlen je
-//     Teilbaumgröße $k$.]) <fig:anteile>
+#figure(image("anteile.pdf", width: 80%),
+  caption: [Anteil realisierbarer Topologien und gültiger Seitenwahlen je
+    Teilbaumgröße $k$.]) <fig:anteile>
 
 Als Optimierung wurde die Längenschranke aus @juhl2018 umgesetzt: Keine Kante
 eines minimalen Steinerbaums ist länger als die längste Kante des MST. Sie
