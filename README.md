@@ -64,6 +64,24 @@ same name and the imports fail.
 The figures never run an algorithm, so they can be restyled without measuring again. The
 sweeps take a few minutes.
 
+
+## Euclidean Steiner tree (notebook)
+
+`./steiner_eukledean.ipynb` contains the exact solver (full topologies + Melzak construction +
+DP over terminal subsets) and the heuristic MST + 120° rule.
+
+To reproduce all results, run the cell below `## Experimente` (save the notebook first, the
+cell reads it from disk). It runs the tests, the OR-Library instances (`estein1`,
+`estein10`–`estein100`, downloaded directly, internet required) and the random benchmark.
+
+- Runtime: about 5 min for the OR-Library part, about 30 min for the benchmark up to n = 8
+  (`N_MAX` in the `#BENCHMARK` cell). The stop button ends the benchmark early and keeps
+  the results so far.
+- Output, written next to the notebook: `estein.csv`, `runs.csv`, `per_k.csv` and
+  `laufzeit.pdf`, `anteile.pdf`, `heuristik.pdf`.
+- The exact solver is limited to about n ≤ 8 terminals; the heuristic runs up to n = 100.
+
+
 ## Layout
 
 | Path                 | Contents                                          |
