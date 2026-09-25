@@ -203,21 +203,75 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 = Ausblick: Approximationsverfahren in der Praxis
 
-// Werden hier nicht im Detail behandelt. Als Vergleichswert in den Messungen dient eine
-// 2-Approximation aus networkx; ihr Verfahren wird bewusst nicht besprochen.
+= Eigenimplementierung und Vergleich mit Standardbibliothek
+
+In der Praxis kommen selten exakte Verfahren zum Einsatz, sondern ausgefeiltere
+Approximationen, oft in Verbindung mit Reduktionstechniken, die eine Instanz vor der
+eigentlichen Rechnung verkleinern @rehfeldt2023. Diese Verfahren werden hier nicht im Detail
+behandelt.
+
+Als Vergleichswert in den Messungen dient eine Approximation aus der Python-Bibliothek
+networkx @hagberg2008. Sie liefert einen zulässigen Baum, dessen Gewicht das Optimum nie um
+mehr als den Faktor zwei übersteigt und dient als Bezugsgröße für Laufzeit und Güte.
 
 = Experimenteller Aufbau
 
 == Technischer Aufbau
 
-// Kurz: Sprache, eigene Graphentypen, die drei Algorithmen, Generator, Messaufbau,
-// Erzeugung der Abbildungen.
+Die Implementierung ist in Python geschrieben und kommt ohne Graphenbibliothek aus. Knoten
+sind ganze Zahlen, eine Kante ist ein Tripel aus ihren beiden Endknoten und ihrem Gewicht,
+normalisiert, so dass die kleinere Knotennummer zuerst aufgeführt wird.
+Ein Graph besteht aus einer Knotenmenge und einer Kantenmenge:
+
+#figure(
+  ```python
+  class Edge(_Edge):
+      u: int
+      v: int
+      weight: float
+
+  class Graph:
+      vertices: set[int]
+      edges: set[Edge]
+  ```,
+  caption: [Die Datentypen, auf denen die Algorithmen arbeiten.],
+) <lst:typen>
+
+Darauf aufbauend sind die drei Bestandteile des Verfahrens einzeln implementiert:
+`floyd()` für die kürzesten Wege einschließlich Vorgängertabelle, `prim()` für die
+Spannbäume und `steiner()` für die Aufzählung samt Rückübersetzung der Wege. Die
+Vergleichsnäherung stammt aus networkx. Unsere eigenen Graphen werden dafür konvertiert.
+
+Um den Aufbau herum liegen drei weitere Bausteine: ein Generator für Zufallsinstanzen, ein
+Script zur Messung der Laufzeiten und Abspeichern der Ergebnisse als CSV-Datei, sowie Code der die Messtdaten Grafiken weiterverarbeitet.
 
 == Instanzgenerator und Parameter
 
-// Sehr kurz: zufällige zusammenhängende Graphen, Knotenzahl, Kantenwahrscheinlichkeit,
-// Terminalzahl, maximales Kantengewicht, feste Startwerte, fünf Wiederholungen je
-// Parameterpunkt, ausgewiesen wird der Median.
+Die Messinstanzen sind zufällige zusammenhängende Graphen. Erzeugt werden sie in zwei
+Schritten: Zuerst entsteht ein zufälliger Spannbaum, indem jeder neue Knoten an einen
+bereits verbundenen angehängt wird. Anschließend wird jedes weitere Knotenpaar mit
+Wahrscheinlichkeit $p$ zusätzlich verbunden. Der Umweg über den Spannbaum stellt den
+Zusammenhang sicher, ohne Graphen zu verwerfen und neu zu ziehen. Die Kantengewichte sind
+ganze Zahlen zwischen 1 und 10, die Terminalknoten werden zufällig aus den Knoten gezogen.
+
+#figure(
+  ```python
+  random.seed(seed)
+  instance = random_steiner_graph(vertex_count, edge_probability, terminal_count)
+  ```,
+  caption: [Eine Instanz ist durch ihre Parameter und den Startwert vollständig bestimmt.],
+) <lst:generator>
+
+Damit hat jede Instanz drei Parameter: die Knotenzahl $n$, die Kantenwahrscheinlichkeit $p$
+und die Anzahl der Terminalknoten $r$. Der verwendete Startwert des Zufallsgenerators wird
+abgespeichert, sodass sich jede einzelne Messung aus ihrer Zeile in der Ergebnisdatei
+reproduzieren lässt.
+
+Gemessen wird in drei Reihen, in denen jeweils ein Parameter variiert und die übrigen fest
+bleiben: über die Anzahl der Terminalknoten bei $n = 30$ und $p = 0{,}3$, über die
+Knotenzahl bei $r = 6$ und $p = 0{,}3$ sowie über die Kantenwahrscheinlichkeit bei $n = 20$
+und $r = 5$. Jeder Parameterpunkt wird mit fünf verschiedenen Startwerten wiederholt,
+von denen jeweils der Median angegeben wird.
 
 == Ergebnisse
 
