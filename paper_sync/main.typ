@@ -624,6 +624,14 @@ polynomiell, solange $r$ logarithmisch in $n$ bleibt, die Aufzählung nur, solan
 logarithmisch bleibt. Wachsen die Anzahl an Terminalknoten $r$ und die Anzahl an Steinerknoten $n - r$
 gleichermaßen, bleibt auch das Minimum der beiden Schranken exponentiell.
 
+Für Instanzen aus dem Hanan-Gitter ist dieses Verhältnis bereits festgelegt.
+Dort folgt die Knotenzahl aus der Zahl der Terminalknoten, es gilt $n <= r^2$ und
+damit $|S| <= r^2 - r$. Beide Parameter sind aneinander gekoppelt und solche Instanzen liegen
+unabhängig von der Eingabe stets im selben Bereich des Parameterraums. Selbst mit der
+Schranke $|S'| <= r - 2$ bleibt $binom(r^2 - r, r - 2)$ die maßgebliche Größe, die schneller
+wächst als $3^r$. Für das rektilineare Problem wäre Dreyfus-Wagner damit das passendere der
+beiden Verfahren.
+
 = Eigenimplementierung und Vergleich mit Standardbibliothek
 
 In der Praxis kommen selten exakte Verfahren zum Einsatz, sondern
