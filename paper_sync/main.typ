@@ -11,7 +11,7 @@
   version: "1",
 )
 
-#pagebreak()// Quelltextauszüge etwas kleiner setzen, damit die Zeilen nicht umbrechen
+// Quelltextauszüge etwas kleiner setzen, damit die Zeilen nicht umbrechen
 #show raw.where(block: true): set text(size: 9pt)
 
 = Einleitung
