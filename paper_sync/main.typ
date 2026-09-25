@@ -282,7 +282,8 @@ Spannbäume und `steiner()` für die Aufzählung samt Rückübersetzung der Wege
 Vergleichsnäherung stammt aus networkx. Unsere eigenen Graphen werden dafür konvertiert.
 
 Um den Aufbau herum liegen drei weitere Bausteine: ein Generator für Zufallsinstanzen, ein
-Script zur Messung der Laufzeiten und Abspeichern der Ergebnisse als CSV-Datei, sowie Code der die Messtdaten Grafiken weiterverarbeitet.
+Script zur Messung der Laufzeiten und Abspeichern der Ergebnisse als CSV-Datei, sowie
+Code, der die Messdaten zu Grafiken weiterverarbeitet.
 
 == Instanzgenerator und Parameter
 
@@ -307,23 +308,23 @@ abgespeichert, sodass sich jede einzelne Messung aus ihrer Zeile in der Ergebnis
 reproduzieren lässt.
 
 Gemessen wird in drei Reihen, in denen jeweils ein Parameter variiert und die übrigen fest
-bleiben: über die Anzahl der Terminalknoten bei $n = 30$ und $p = 0,3$, über die
-Knotenzahl bei $r = 6$ und $p = 0,3$ sowie über die Kantenwahrscheinlichkeit bei $n = 20$
+bleiben: über die Anzahl der Terminalknoten bei $n = 30$ und $p$ = 0,3, über die
+Knotenzahl bei $r = 6$ und $p$ = 0,3 sowie über die Kantenwahrscheinlichkeit bei $n = 20$
 und $r = 5$. Jeder Parameterpunkt wird mit fünf verschiedenen Startwerten wiederholt,
 von denen jeweils der Median angegeben wird.
 
 == Ergebnisse
 
 Alle Messungen verwenden zufällige zusammenhängende Graphen mit $n$ Knoten,
-Kantenwahrscheinlichkeit $p$ und $r$ Terminalknoten. $|S| = n - r$ ergiebt die übrigen
+Kantenwahrscheinlichkeit $p$ und $r$ Terminalknoten. $|S| = n - r$ ergibt die übrigen
 Knoten.
 
-Um abzuschätzen, ob die Implementierung plausibel ist wird zunächst überprüft,
+Um abzuschätzen, ob die Implementierung plausibel ist, wird zunächst überprüft,
 ob die Laufzeit dem entspricht, was die theoretische Laufzeitkomplexität erwarten lässt.
 @fig:messung-vorhersage trägt die gemessene Laufzeit gegen den vorhergesagten Aufwand auf,
 also gegen $n^3$ für die kürzesten Wege zwischen allen Knotenpaaren zuzüglich eines
 Spannbaums je aufgezählter Teilmenge. Über 270 Läufe und vier Größenordnungen hinweg ergibt
-sich ein Exponent von 0,94 bei $R^2 = 0,99$. Die Messwerte folgen der Vorhersage also
+sich ein Exponent von 0,94 bei $R^2$ = 0,99. Die Messwerte folgen der Vorhersage also
 über den gesamten Bereich, wachsen aber etwas langsamer. Der Unterschied geht
 vermutlich auf einen konstanten Anteil zurück, der bei kleinen Instanzen überwiegt.
 
@@ -333,7 +334,7 @@ vermutlich auf einen konstanten Anteil zurück, der bei kleinen Instanzen überw
 ) <fig:messung-vorhersage>
 
 Wächst nur der Graph, während die Zahl der Terminalknoten fest bleibt, so bleibt die
-Laufzeit polynomiell: die Aufzählung ist durch $|S'| <= r - 2$ beschränkt, sodass kein
+Laufzeit polynomiell, denn die Aufzählung ist durch $|S'| <= r - 2$ beschränkt, sodass kein
 exponentieller Anteil entsteht. @fig:laufzeit-knoten zeigt das für $r = 6$ mit einem
 gemessenen Exponenten von 5,5.
 #figure(
@@ -344,10 +345,10 @@ gemessenen Exponenten von 5,5.
 ) <fig:laufzeit-knoten>
 
 Die Kantenwahrscheinlichkeit kommt in der Komplexität nicht vor, was zunächst unintuitiv
-wirkt. @fig:laufzeit-dichte bestätigt es: zwischen $p = 0,1$ und $p = 1$ bleibt das exakte
+wirkt. @fig:laufzeit-dichte bestätigt es. Zwischen $p$ = 0,1 und $p = 1$ bleibt das exakte
 Verfahren bei rund neun Millisekunden, während sich die Kantenzahl verzehnfacht. Der
 Grund ist, dass nach dem ersten Schritt nicht mehr der Graph selbst, sondern die
-Distanzmatrix verarbeitet wird was den Kanten in einem Vollständigen Graphen entspricht.
+Distanzmatrix verarbeitet wird, was den Kanten in einem vollständigen Graphen entspricht.
 Die Approximation reagiert leicht auf die Dichte, weil sie auf den tatsächlichen Kanten
 arbeitet.
 
@@ -358,10 +359,10 @@ arbeitet.
 
 Der eigentliche Kostentreiber ist die Anzahl der Terminalknoten.
 @fig:laufzeit-terminale zeigt keinen monotonen Anstieg, sondern
-einen Buckel. bei $r = 11$ steigt die Laufzeit des exakten Verfahrens bis auf etwa zwölf
+einen Buckel. Bei $r = 11$ steigt die Laufzeit des exakten Verfahrens bis auf etwa zwölf
 Sekunden an, fällt danach aber wieder auf sechs Millisekunden bei $r = 30$.
 Grund dafür ist, dass bei gleichbleibender Gesamtknotenzahl keine Steinerknoten mehr übrig bleiben
-wenn $r = 30$ erreicht ist. Das Problem reduziert sich dann auf das finden des Minimalen Spannbaums.
+wenn $r = 30$ erreicht ist. Das Problem reduziert sich dann auf das Finden des minimalen Spannbaums.
 Da der Suchalgorithmus Teilmengen von maximal $r -2$ Steinerknoten absucht,
 ist auch bei niedrigen Werten von $r$ die Laufzeit gering.
 Das Maximum liegt dort, wo das Produkt aus der Anzahl
@@ -374,13 +375,13 @@ Millisekundenbereich.
   caption: [Laufzeit über der Anzahl der Terminalknoten bei 30 Knoten.],
 ) <fig:laufzeit-terminale>
 
-Zuletzt wurde gemessen was die Approximation an Güte kostet. @fig:guete-approximation zeigt für
+Zuletzt wurde gemessen, was die Approximation an Güte kostet. @fig:guete-approximation zeigt für
 dieselben Instanzen das Verhältnis aus approximiertem und optimalem Gewicht.
 In 59 Prozent der 145 Fälle findet die Approximation den optimalen Baum, im
 Mittel liegt sie 2,2 Prozent darüber, im schlechtesten Einzelfall 18 Prozent. Die
 garantierte Schranke von 2 wird damit nie erreicht.
 
-Interessant ist, dass die schlechtesten Einzelfälle dort Gruppieren, wo auch die Laufzeit des
+Interessant ist, dass die schlechtesten Einzelfälle dort gruppieren, wo auch die Laufzeit des
 exakten Suchalgorithmus hoch ist. Die Erklärung ist dieselbe. Dort gibt es viele
 Steiner-Knoten, die tatsächlich etwas beitragen können und genau deren Auswahl trifft die
 Approximation nicht. Bei sehr wenigen Terminalknoten ist der gesuchte Baum nahezu ein
