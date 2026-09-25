@@ -95,7 +95,7 @@ Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich die frage wie na
 
 == Grundlagen
 
-=== Vollständige und unvollständige Steinerbäume
+=== Vollständige und unvollständige Steinerbäume <sec:vollstaendig>
 
 Ein Steinerbaum ist _vollständig_, wenn alle Terminale Blätter sind (Grad 1).
 Hat mindestens ein Terminal Grad 2 oder 3, ist der Baum _unvollständig_. Damit
@@ -260,51 +260,67 @@ superexponentiellen Zahl der Topologien dominiert.
 
 
 
+=== Komplexität <sec:komplexitaet>
 
-=== Optimale Lösung
-//für die optimale lösung kann es sein das alle topologien überprüft werden müssen
-// die topologien können dann durch melzak oder .. analysiert werden
-// 
+Das euklidische Steinerbaumproblem ist NP-schwer @garey1977euclidean. Aber nicht als NP-vollständig belegt.
+Es ist unbekannt ob die Entscheidungsvariante in NP liegt („Gibt es einen Steinerbaum der Länge höchstens $L$?“), die Topologie und Koordinaten könnte man schnell konstruieren aber ddie Länge ist eine summe von Quadratwurzeln. Ob eine solche Summe kleiner als $L$ ist, lässt sich nicht
+bekanntermaßen in Polynomialzeit entscheiden, da unklar ist, wie viele Stellen
+dafür im Allgemeinen nötig sind (_Sum of Square Roots_ problem).
 
-=== Voraussetzungen und Beweis der optimalen Lösung
+Beispiel:
+$ sqrt(2) + sqrt(34) + sqrt(42) + sqrt(55) + sqrt(57) quad "und" quad
+  sqrt(5) + sqrt(30) + sqrt(37) + sqrt(53) + sqrt(58) $
+unterscheiden sich um nur etwa $1,43 dot 10^(-12)$. 
 
-// Gegebenenfalls Beweis der 120-Grad-Regel bzw. dass Steiner-Punkte drei Verbindungen haben. 
-//Regel für unvollst. bzw. vollständige Bäume
-// Quelle: @gilbert1968
+GeoSteiner
+begegnet diesem Problem, indem es die Koordinaten der Ersatzpunkte exakt im
+Zahlkörper $QQ(sqrt(3))$ berechnet und erst die Längen numerisch annähert
+@juhl2018. In der Praxis ist diese Unterscheidung jedoch weitgehend irrelevant.
 
-=== NP-Schwere
 
-//NP-schwer, aber es ist nicht bekannt, ob die Entscheidungsvariante in NP liegt.
-// Grund dafür ist dass floating point Präzision nicht ausreicht
-// um Summen von Wurzeln zu vergleichen. (unklar ob SSR in NP liegt).
-// Also gerade nicht als NP-vollständig belegt, anders als bei den beiden anderen Varianten.
-// Unterscheidung in der Praxis aber weitgehend irrelevant.
-// Quelle: @garey1977euclidean
 
-=== Warum nur etwa 14 % besser als der minimale Spannbaum
 
-// Steiner-Verhältnis √3/2 ≈ 0,866, Vermutung von Gilbert und Pollak. Der Beweis von Du und
-// Hwang (1992) wird angezweifelt da nachträglich Lücken / Fehler gefunden wurden.
-// Falls er sich tatsächlich als falsch herausstellt wäre der Beweis von Chung–Graham (1985)
-// der nächstbeste Wert (Steiner-Verhältnis von ≈ 0,824)
-// Quellen: @gilbert1968 (Vermutung), @du1992 (angezweifelter Beweis), @innami2010 und
-// @ivanov2012 (Lücke im Beweis), @chung1985 (beste bewiesene Schranke),
-// @pollak1978, @du1985fivepoints, @rubinstein1991sixpoints (bewiesene Fälle n = 4, 5, 6)
 
-=== Vollständige und unvollständige Steinerbäume
 
-// Quelle: @gilbert1968
+== Näherung und Steiner-Verhältnis <sec:eukl-naeherung>
 
-== Approximierte Lösung
-// heuristik mit MST und dann 120 grad rgel
+=== MST und 120°-Heuristik
+
+Der euklidische MST lässt sich in $O(n log n)$ berechnen, da er in der
+Delaunay-Triangulierung der Terminale enthalten ist. Er ist bereits ein
+gültiger Steinerbaum ohne Steinerknoten. Eine einfache Heuristik verbessert ihn
+lokal: Schließen zwei Kanten an einem Knoten einen Winkel unter 120° ein,
+werden sie durch einen Steinerknoten im Fermat-Punkt der drei beteiligten
+Knoten ersetzt (vgl. @sec:eigenschaften). Das wird wiederholt, bis kein
+solcher Winkel mehr existiert. Da jeder Schritt den Baum verkürzt, ist das
+Ergebnis nie länger als der MST, es muss aber nicht optimal sein, da nur
+lokal verbessert wird und die Topologie des MST weitgehend erhalten bleibt.
+Wie nah die Heuristik dem Optimum kommt, untersucht TODO.
+
+=== Steiner-Verhältnis
+
+Wie viel ein Steinerbaum höchstens gegenüber dem MST spart, beschreibt das
+_Steiner-Verhältnis_
+Gilbert und Pollak vermuteten $rho = sqrt(3)\/2$ ≈ 0,866 @gilbert1968; dieser
+Wert wird vom gleichseitigen Dreieck erreicht. Die Ersparnis betrüge dann
+höchstens etwa 13,4 %, und umgekehrt wäre der MST höchstens
+$2\/sqrt(3)$ ≈ 1,155-mal so lang wie das Optimum.
+
+Du und Hwang veröffentlichten einen Beweis der Vermutung @du1992, in dem später
+Lücken nachgewiesen wurden @innami2010 @ivanov2012; die Vermutung gilt daher
+als offen. Bewiesen ist sie für $n = 4, 5, 6$ Terminale @pollak1978
+@du1985fivepoints @rubinstein1991sixpoints. Die beste allgemein anerkannte
+untere Schranke ist $rho >=$ 0,824 @chung1985. Damit ist der MST bewiesenermaßen
+höchstens etwa 1,21-mal so lang wie der minimale Steinerbaum.
 
 === Aktuelle Entwicklungen
 
-// Quelle: @llm2026gilbertpollak (Preprint, nicht begutachtet)
+Ke et al. verwenden von großen Sprachmodellen erzeugte Beweisbausteine, die
+maschinell verifiziert werden, und behaupten damit eine untere Schranke von
+$rho >=$ 0,8559 @llm2026gilbertpollak. Dies würde die Schranke von 1985
+deutlich verbessern und den MST-Faktor auf etwa 1,17 senken. [Status der
+Begutachtung prüfen.]
 
-=== Approximation gegenüber optimaler Lösung
-
-// Laufzeit und durchschnittliche Differenz in der Gesamtlänge.
 
 === Anwendungen in der Praxis
 
