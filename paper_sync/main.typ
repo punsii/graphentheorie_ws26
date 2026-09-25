@@ -7,8 +7,8 @@
   doc-type: "Modularbeit",
   language: "de",
   bibliography: bibliography("sources.bib"),
-  toc-depth: 2,
-  //version: "1",
+  toc-depth: 3,
+  version: "1",
 )
 
 #pagebreak()
