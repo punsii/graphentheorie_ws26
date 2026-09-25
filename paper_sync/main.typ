@@ -59,13 +59,35 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 // Quellen: @gilbert1968 (euklidisch), @hanan1966 (rektilinear), @jungnickel1999 (Graphen)
 
 = Euklidisches Steinerbaum-Problem
-// Das Euklidische SBP ist eine Besondere variante des SBP. In dieser können die steinerknoten frei platziert werden. Die kantenlänge ist die Euklidische distanz zwischen zwei Terminalen. Um die Optimale lösung für einen Baum zu finden müssen wir die Topologien durchprobieren, da theoretisch jede Topologie die optimale lösung beinhalten könnte. Das bauen/ platzieren des Baums für eine gewählte Topologie ist dann relativ einfach (Melzak oder ..) genauso wie die minimale länge für diesen zu finden.
 
-// durch die nutzung des eukl. raums einer Plane ergeben sich interessante geometische vorrausetzung dafür das ein Baum optimal sein kann (damit ist erstmal der optimale Baum für eine Topologie gemeint und nicht der gesamt optimale Baum für eine Menge an Terminalen). Durch kluges pruning (Geosteiner) können im Bestenfall viele der Topologien ausgeschlossen werden ohne sie komplett zu kennen, das problem bleibt aber natürlich N(p) schwer.
+Im euklidischen Fall des Steinerbaumproblems liegen die Terminale in der Ebene,
+und die Länge einer Kante entspricht dem euklidischen Abstand der verbundenen
+Knoten. Es gibt keine vorgegebene Menge möglicher Steinerknoten: Sie dürfen an
+beliebigen Stellen der Ebene platziert werden. Der Suchraum ist damit zunächst
+kontinuierlich und lässt sich nicht direkt durch Ausprobieren von Kandidaten
+durchsuchen.
 
-//um die N(p) laufzeit zu umgehen können wir Aproximationen über effizientere algortihmen nutzen
+Die Lösung wird daher in zwei Teilprobleme aufgeteilt. Zunächst wird die
+_Topologie_ gewählt, also welche Knoten miteinander verbunden sind. Für eine Topologie lässt sich die optimale Lage der Steinerknoten anschließend
+exakt konstruieren, etwa mit dem Algorithmus von Melzak #cite(<melzak1961>).
+Die eigentliche Schwierigkeit liegt in der Wahl der Topologie: Ihre Anzahl
+wächst superexponentiell mit der Zahl der Terminale. Obwohl das Problem
+NP-schwer ist @garey1977euclidean, lösen spezialisierte Verfahren wie
+GeoSteiner zufällige Instanzen mit über tausend Terminalen exakt, indem sie
+aussichtslose Teilbäume früh verwerfen #cite(<juhl2018>).
 
-//Die vermutung das der Steinerbaum maximal wurzel 3/2 besser ist als der MST macht das anwenden der Optimalen Steinerbaum lösung eher unattraktiv, Bewissen wurde aber  erst (0,82 bzw. 0,86)
+Gleichzeitig ist der mögliche Vorteil gegenüber dem MST begrenzt. Nach der
+Vermutung von Gilbert und Pollak @gilbert1968 ist ein minimaler Steinerbaum
+mindestens #box[$sqrt(3)\/2$ ≈ 0,866-mal] so lang wie der MST. Die Ersparnis
+beträgt demnach höchstens etwa 13,4 %. Auf zufälligen Instanzen liegt sie im
+Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich die frage wie nahe wir an die Optimale Lösung mit MST und einfachen Heuristiken kommen können und was bis welcher Terminal menge wir noch die Optimale Lösung finden können.
+
+// Dieser Abschnitt untersucht daher, [wie weit eine exakte Lösung über die
+// Aufzählung von Topologien reicht und wie nah MST und eine einfache Heuristik
+// an das Optimum herankommen]. Dazu fasst @sec:eukl-grundlagen die benötigten
+// Eigenschaften optimaler Bäume zusammen, @sec:eukl-implementierung beschreibt
+// die Implementierung und @sec:eukl-experimente die Ergebnisse auf Instanzen der
+// OR-Library @beasley1990 und auf zufällig erzeugten Instanzen.
 
 
 == Optimale Lösung
