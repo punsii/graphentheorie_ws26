@@ -18,9 +18,25 @@
 
 = Einleitung
 
-// Worum es geht, wofür man Steinerbäume braucht, und ein Satz als Leitfaden durch die drei
-// behandelten Varianten in der Reihenfolge der Taxonomie.
-// Quellen: @gilbert1968 (Ursprung der Problemstellung), @rehfeldt2023 (aktueller Stand)
+Gegeben ist eine Menge von Punkten, die miteinander verbunden werden sollen und zwar so
+günstig wie möglich. Verbindet man ausschließlich die gegebenen Punkte, so ist das der
+minimale Spannbaum, für den es seit Langem effiziente Verfahren gibt. Erlaubt man dagegen,
+zusätzliche Verzweigungspunkte einzuführen, die in der Aufgabenstellung gar nicht vorkommen,
+so wird die Verbindung in aller Regel kürzer, das Problem aber schwerer. Diese
+zusätzlichen Punkte heißen Steiner-Punkte und das Problem, die kürzeste Lösung
+zu finden das Steinerbaum-Problem @gilbert1968.
+
+Die Fragestellung tritt überall dort auf, wo ein Netz
+gebaut werden muss und Verzweigungen frei wählbar sind: bei der Verlegung von Leitungen, im
+Entwurf integrierter Schaltungen, in der Rekonstruktion von Stammbäumen in der Biologie.
+Entsprechend aktiv ist die Forschung bis heute @rehfeldt2023.
+
+Je nachdem, wo die zusätzlichen Punkte liegen dürfen und wie Abstände gemessen werden,
+entstehen verschiedene Varianten des Problems. Diese Arbeit behandelt drei davon in der
+Reihenfolge, in der sie auseinander hervorgehen: das euklidische Problem in der Ebene, das
+rektilineare Problem mit seiner Reduktion auf einen endlichen Graphen und schließlich das
+Steinerbaum-Problem in Graphen. Für die letzte Variante wurde ein exaktes Verfahren
+selbst implementiert und sein Laufzeitverhalten gemessen.
 
 = Methodik
 
@@ -694,4 +710,38 @@ also gerade dort am ungenauesten, wo das exakte Verfahren am teuersten ist.
 
 == Repository
 
-// Link auf das Git-Repository.
+Betrachtet wurden drei Varianten des Steinerbaum-Problems. Im euklidischen Fall dürfen die
+Steinerknoten frei in der Ebene liegen, womit unendlich viele Lagen in Frage kommen und die
+Lösung über die Wahl einer Topologie und deren anschließende Konstruktion verläuft. Im
+rektilinearen Fall wird in der $L_1$-Metrik gemessen, in der sich der Abstand zweier Punkte
+aus der Summe ihrer Koordinatenunterschiede ergibt. Das schränkt die möglichen Lagen so weit
+ein, dass ein endliches Gitter genügt, und genau über diese Reduktion geht die Variante in
+ein Graphenproblem über.
+
+Alle drei Varianten sind NP-schwer @karp1972 @garey1977rectilinear @garey1977euclidean.
+Ein Verfahren, das für beliebige Eingaben in polynomieller Zeit eine optimale Lösung
+liefert, ist für keine von ihnen bekannt und eine garantiert optimale Lösung kostet damit
+exponentiellen Aufwand.
+
+Die Messungen zeigen, wie ungleich sich dieser Aufwand über den Parameterbereich verteilt.
+Bei gleichbleibender Knotenzahl $n = 30$ steigt die Laufzeit des exakten Verfahrens mit
+wachsender Terminalzahl zunächst auf rund zwölf Sekunden bei $r = 11$ an und fällt danach
+wieder auf sechs Millisekunden bei $r = 30$. Der Grund liegt in der Aufzählung über
+Teilmengen der $n - r$ Steinerknoten, von denen bei vielen Terminalknoten nur wenige
+übrig bleiben.
+
+Die approximative Lösung folgt diesem Verlauf nicht. Ihre Laufzeit bleibt über den gesamten
+Parameterbereich unter zehn Millisekunden. In 59 Prozent der Fälle findet sie den optimalen
+Baum, im Mittel weicht sie um 2,2 Prozent und im schlechtesten Einzelfall um 18 Prozent
+davon ab. Die größten Abweichungen treten bei mittleren Terminalzahlen auf, also dort, wo
+auch das exakte Verfahren am teuersten ist.
+
+Für das Graphenproblem lässt sich daraus ablesen, in welchen Bereichen eine exakte Rechnung
+möglich bleibt und in welchen nur eine Näherung in Frage kommt. Das rektilineare Problem
+lässt sich über das Hanan-Gitter zwar auf einen Graphen zurückführen, dort sind Knoten- und
+Terminalzahl durch die Konstruktion aber fest aneinander gekoppelt. Solche Instanzen treffen
+immer denselben Ausschnitt des Parameterraums und die hier über frei gewählte $r$ und $n$
+gemessenen Verläufe lassen sich nicht unmittelbar darauf übertragen. Für das euklidische
+Problem greift die Einschätzung noch weniger, da dort die Lage der Steinerknoten nicht im
+Voraus feststeht und die Anzahl der zu prüfenden Topologien immer exponentiell mit der Zahl
+der Terminalknoten wächst.
