@@ -13,6 +13,9 @@
 
 #pagebreak()
 
+// Quelltextauszüge etwas kleiner setzen, damit die Zeilen nicht umbrechen
+#show raw.where(block: true): set text(size: 9pt)
+
 = Einleitung
 
 // Worum es geht, wofür man Steinerbäume braucht, und ein Satz als Leitfaden durch die drei
@@ -24,7 +27,7 @@
 Den Einstieg in das Thema bildete eine breite Recherche in allgemeinen Webquellen und in
 der Wikipedia. Ziel war dabei kein vollständiger Überblick, sondern eine erste Orientierung:
 Welche Problemstellungen werden unter dem Begriff des Steinerbaums zusammengefasst, worin
-unterscheiden sie sich, und welche davon eignen sich für eine eigene Implementierung?
+unterscheiden sie sich und welche davon eignen sich für eine eigene Implementierung?
 
 Als fachlicher Ausgangspunkt diente anschließend die Arbeit „Implications, conflicts, and
 reductions for Steiner trees“ von Rehfeldt und Koch @rehfeldt2023. Der Beitrag selbst
@@ -290,76 +293,92 @@ abgespeichert, sodass sich jede einzelne Messung aus ihrer Zeile in der Ergebnis
 reproduzieren lässt.
 
 Gemessen wird in drei Reihen, in denen jeweils ein Parameter variiert und die übrigen fest
-bleiben: über die Anzahl der Terminalknoten bei $n = 30$ und $p = 0{,}3$, über die
-Knotenzahl bei $r = 6$ und $p = 0{,}3$ sowie über die Kantenwahrscheinlichkeit bei $n = 20$
+bleiben: über die Anzahl der Terminalknoten bei $n = 30$ und $p = 0,3$, über die
+Knotenzahl bei $r = 6$ und $p = 0,3$ sowie über die Kantenwahrscheinlichkeit bei $n = 20$
 und $r = 5$. Jeder Parameterpunkt wird mit fünf verschiedenen Startwerten wiederholt,
 von denen jeweils der Median angegeben wird.
 
 == Ergebnisse
 
-=== Laufzeit über der Anzahl der Terminalknoten
+Alle Messungen verwenden zufällige zusammenhängende Graphen mit $n$ Knoten,
+Kantenwahrscheinlichkeit $p$ und $r$ Terminalknoten. $|S| = n - r$ ergiebt die übrigen
+Knoten.
 
-#figure(
-  image("images/benchmarks/runtime_by_terminals.png", width: 90%),
-  caption: [
-    Laufzeit des exakten Verfahrens und der 2-Approximation in Abhängigkeit von der Anzahl
-    der Terminalknoten $r$. Zufällige Graphen mit $n = 30$ Knoten und Kantenwahrscheinlichkeit
-    $p = 0{,}3$; jeder Punkt ist der Median aus fünf Graphen. Im grau hinterlegten Bereich
-    fehlen Messwerte des exakten Verfahrens, weil dort mehr als 60.000 Knotenteilmengen
-    aufgezählt werden müssten. Beide Achsen des Laufzeitwerts sind logarithmisch.
-  ],
-) <fig:laufzeit-terminale>
-
-=== Laufzeit über der Knotenzahl
-
-#figure(
-  image("images/benchmarks/runtime_by_vertices.png", width: 90%),
-  caption: [
-    Laufzeit in Abhängigkeit von der Knotenzahl $n$ bei festen vier Terminalknotenn und
-    $p = 0{,}3$. Punkte sind Mediane aus fünf zufälligen Graphen je Größe, die gestrichelten
-    Linien sind Ausgleichsgeraden im doppelt logarithmischen Maßstab; der angegebene Exponent
-    ist deren Steigung. Die Analyse sagt für das exakte Verfahren den Exponenten 3 voraus,
-    da es alle kürzesten Wege zwischen allen Knotenpaaren berechnet.
-  ],
-) <fig:laufzeit-knoten>
-
-=== Laufzeit über der Kantenwahrscheinlichkeit
-
-#figure(
-  image("images/benchmarks/runtime_by_density.png", width: 90%),
-  caption: [
-    Laufzeit in Abhängigkeit von der Kantenwahrscheinlichkeit $p$, also der
-    Wahrscheinlichkeit, mit der ein Knotenpaar durch eine Kante verbunden ist; $p = 1$
-    entspricht dem vollständigen Graphen. Zufällige Graphen mit $n = 20$ Knoten und
-    $r = 5$ Terminalknotenn, Mediane aus je fünf Graphen. Das exakte Verfahren verläuft flach,
-    weil es auf der Distanzmatrix arbeitet, deren Größe allein von der Knotenzahl abhängt.
-  ],
-) <fig:laufzeit-dichte>
-
-=== Messung gegenüber Vorhersage
+Um abzuschätzen, ob die Implementierung plausibel ist wird zunächst überprüft,
+ob die Laufzeit dem entspricht, was die theoretische Laufzeitkomplexität erwarten lässt.
+@fig:messung-vorhersage trägt die gemessene Laufzeit gegen den vorhergesagten Aufwand auf,
+also gegen $n^3$ für die kürzesten Wege zwischen allen Knotenpaaren zuzüglich eines
+Spannbaums je aufgezählter Teilmenge. Über 270 Läufe und vier Größenordnungen hinweg ergibt
+sich ein Exponent von 0,94 bei $R^2 = 0,99$. Die Messwerte folgen der Vorhersage also
+über den gesamten Bereich, wachsen aber etwas langsamer. Der Unterschied geht
+vermutlich auf einen konstanten Anteil zurück, der bei kleinen Instanzen überwiegt.
 
 #figure(
   image("images/benchmarks/measured_against_prediction.png", width: 90%),
-  caption: [
-    Gemessene Laufzeit des exakten Verfahrens gegenüber dem Aufwand, den die Analyse
-    vorhersagt. Ein Punkt je Messung über alle Messreihen hinweg. Der vorhergesagte Aufwand
-    ist $n^3$ für die kürzesten Wege zwischen allen Knotenpaaren zuzüglich eines Spannbaums
-    je aufgezählter Teilmenge, mit $n$ Knoten, $r$ Terminalknotenn, $|S| = n - r$ Steiner-Knoten,
-    Teilmengengröße $i$ und $k = r + i$ Knoten je Spannbaum. Ein Exponent von 1 würde
-    bedeuten, dass die Analyse die Messwerte vollständig erklärt.
-  ],
+  caption: [Gemessene Laufzeit des exakten Verfahrens gegenüber dem vorhergesagten Aufwand.],
 ) <fig:messung-vorhersage>
 
-=== Güte der Approximation
+Wächst nur der Graph, während die Zahl der Terminalknoten fest bleibt, so bleibt die
+Laufzeit polynomiell: die Aufzählung ist durch $|S'| <= r - 2$ beschränkt, sodass kein
+exponentieller Anteil entsteht. @fig:laufzeit-knoten zeigt das für $r = 6$ mit einem
+gemessenen Exponenten von 5,5.
+#figure(
+  image("images/benchmarks/runtime_by_vertices.png", width: 90%),
+  caption: [
+    Laufzeit über der Knotenzahl bei sechs Terminalknoten, mit angepassten Exponenten.
+  ],
+) <fig:laufzeit-knoten>
+
+Die Kantenwahrscheinlichkeit kommt in der Komplexität nicht vor, was zunächst unintuitiv
+wirkt. @fig:laufzeit-dichte bestätigt es: zwischen $p = 0,1$ und $p = 1$ bleibt das exakte
+Verfahren bei rund neun Millisekunden, während sich die Kantenzahl verzehnfacht. Der
+Grund ist, dass nach dem ersten Schritt nicht mehr der Graph selbst, sondern die
+Distanzmatrix verarbeitet wird was den Kanten in einem Vollständigen Graphen entspricht.
+Die Approximation reagiert leicht auf die Dichte, weil sie auf den tatsächlichen Kanten
+arbeitet.
+
+#figure(
+  image("images/benchmarks/runtime_by_density.png", width: 90%),
+  caption: [Laufzeit über der Kantenwahrscheinlichkeit bei fester Graphgröße.],
+) <fig:laufzeit-dichte>
+
+Der eigentliche Kostentreiber ist die Anzahl der Terminalknoten.
+@fig:laufzeit-terminale zeigt keinen monotonen Anstieg, sondern
+einen Buckel. bei $r = 11$ steigt die Laufzeit des exakten Verfahrens bis auf etwa zwölf
+Sekunden an, fällt danach aber wieder auf sechs Millisekunden bei $r = 30$.
+Grund dafür ist, dass bei gleichbleibender Gesamtknotenzahl keine Steinerknoten mehr übrig bleiben
+wenn $r = 30$ erreicht ist. Das Problem reduziert sich dann auf das finden des Minimalen Spannbaums.
+Da der Suchalgorithmus Teilmengen von maximal $r -2$ Steinerknoten absucht,
+ist auch bei niedrigen Werten von $r$ die Laufzeit gering.
+Das Maximum liegt dort, wo das Produkt aus der Anzahl
+dieser Teilmengen und ihrer Größe am größten wird, also bei etwa einem Drittel der Knoten
+als Terminalknoten. Die Approximation bleibt über den gesamten Bereich im
+Millisekundenbereich.
+
+#figure(
+  image("images/benchmarks/runtime_by_terminals.png", width: 90%),
+  caption: [Laufzeit über der Anzahl der Terminalknoten bei 30 Knoten.],
+) <fig:laufzeit-terminale>
+
+Zuletzt wurde gemessen was die Approximation an Güte kostet. @fig:guete-approximation zeigt für
+dieselben Instanzen das Verhältnis aus approximiertem und optimalem Gewicht.
+In 59 Prozent der 145 Fälle findet die Approximation den optimalen Baum, im
+Mittel liegt sie 2,2 Prozent darüber, im schlechtesten Einzelfall 18 Prozent. Die
+garantierte Schranke von 2 wird damit nie erreicht.
+
+Interessant ist, dass die schlechtesten Einzelfälle dort Gruppieren, wo auch die Laufzeit des
+exakten Suchalgorithmus hoch ist. Die Erklärung ist dieselbe. Dort gibt es viele
+Steiner-Knoten, die tatsächlich etwas beitragen können und genau deren Auswahl trifft die
+Approximation nicht. Bei sehr wenigen Terminalknoten ist der gesuchte Baum nahezu ein
+kürzester Weg, bei sehr vielen nahezu ein minimaler Spannbaum. In beiden Fällen bleibt wenig zu
+entscheiden und die Näherung trifft das Optimum fast immer. Wie zu erwarten ist die Approximation
+also gerade dort am ungenauesten, wo das exakte Verfahren am teuersten ist.
 
 #figure(
   image("images/benchmarks/quality_by_terminals.png", width: 90%),
   caption: [
-    Gewicht der 2-Approximation geteilt durch das Gewicht des optimalen Steinerbaums, ein
-    Punkt je Instanz über alle Messreihen hinweg, waagerecht leicht gestreut, damit gleiche
-    Werte sichtbar bleiben. Ein Verhältnis von 1{,}0 bedeutet, dass die Approximation einen
-    optimalen Baum gefunden hat. Die garantierte Schranke von 2 wird in keiner Messung auch
-    nur annähernd erreicht.
+    Verhältnis aus approximiertem und optimalem Gewicht, ein Punkt je Instanz, bei 30
+    Knoten. Für bessere Lesbarkeit sind die Punkte waagerecht leicht gestreut.
   ],
 ) <fig:guete-approximation>
 
