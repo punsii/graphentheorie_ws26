@@ -35,8 +35,7 @@ Je nachdem, wo die zusätzlichen Punkte liegen dürfen und wie Abstände gemesse
 entstehen verschiedene Varianten des Problems. Diese Arbeit behandelt drei davon in der
 Reihenfolge, in der sie auseinander hervorgehen: das euklidische Problem in der Ebene, das
 rektilineare Problem mit seiner Reduktion auf einen endlichen Graphen und schließlich das
-Steinerbaum-Problem in Graphen. Für die letzte Variante wurde ein exaktes Verfahren
-selbst implementiert und sein Laufzeitverhalten gemessen.
+Steinerbaum-Problem in Graphen. Für das euklidische Problem und für das Problem in Graphen wurde jeweils ein exaktes Verfahren selbst implementiert und sein Laufzeitverhalten gemessen.
 
 = Methodik
 
@@ -58,7 +57,7 @@ Wettbewerbsunterlagen ergab sich als nächster Schritt eine Sichtung der verschi
 Problemdefinitionen und ihrer Beziehungen zueinander. Entscheidend war dabei die
 Beobachtung, dass sich die geometrischen Varianten unter geeigneten Voraussetzungen auf das
 Problem in Graphen zurückführen lassen. Diese Erkenntnis bildete die Basis für die Wahl der
-behandelten Themen. Das euklidische und das rektilineare Problem werden theoretisch
+behandelten Themen. Das rektilineare Problem wurde theoretisch
 behandelt und über diese Reduktion mit dem Graphenproblem verbunden.
 
 Auf dieser Grundlage wurde festgelegt, was selbst umgesetzt wird. Für das Problem in Graphen
@@ -67,6 +66,16 @@ dessen theoretisches Laufzeitverhalten nicht nur zitieren, sondern auch messen z
 Als Vorlage dient Algorithmus 4.6.3 aus Jungnickel, „Graphs, Networks and Algorithms“
 @jungnickel1999, der zugleich Grundlage der Lehrveranstaltung ist und das Verfahren
 einschließlich seiner Teilalgorithmen vollständig beschreibt.
+
+Für das euklidische Problem bildeten die Arbeiten von Gilbert und Pollak
+@gilbert1968 und Melzak @melzak1961 sowie das Standardwerk von Hwang, Richards
+und Winter @hwang1992 den theoretischen Ausgangspunkt; den Stand exakter
+Verfahren beschreibt die GeoSteiner-Studie von Juhl et al. @juhl2018. Um den
+Aufwand der exakten Lösung nicht nur abzuschätzen, sondern zu messen, wurde der
+Melzak-Algorithmus mit einer Aufzählung aller Topologien selbst implementiert
+und mit einer einfachen Heuristik verglichen. Zur Validierung dienen
+Testinstanzen der OR-Library mit bekannten Optima @beasley1990.
+[Nicht ergiebige Quellen ergänzen.]
 
 = Problemtaxonomie
 
@@ -96,7 +105,7 @@ einschließlich seiner Teilalgorithmen vollständig beschreibt.
 
 = Euklidisches Steinerbaum-Problem
 
-Im euklidischen Fall des Steinerbaumproblems liegen die Terminale in der Ebene,
+Im euklidischen Fall des Steinerbaum-Problems liegen die Terminale in der Ebene,
 und die Länge einer Kante entspricht dem euklidischen Abstand der verbundenen
 Knoten. Es gibt keine vorgegebene Menge möglicher Steinerknoten: Sie dürfen an
 beliebigen Stellen der Ebene platziert werden. Der Suchraum ist damit zunächst
@@ -116,7 +125,9 @@ Gleichzeitig ist der mögliche Vorteil gegenüber dem MST begrenzt. Nach der
 Vermutung von Gilbert und Pollak @gilbert1968 ist ein minimaler Steinerbaum
 mindestens #box[$sqrt(3)\/2$ ≈ 0,866-mal] so lang wie der MST. Die Ersparnis
 beträgt demnach höchstens etwa 13,4 %. Auf zufälligen Instanzen liegt sie im
-Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich die frage wie nahe wir an die Optimale Lösung mit MST und einfachen Heuristiken kommen können und was bis welcher Terminal menge wir noch die Optimale Lösung finden können.
+Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich daher die
+Frage, bis zu welcher Größe sich die optimale Lösung exakt berechnen lässt und
+wie nah MST und eine einfache Heuristik an sie herankommen.
 
 // Dieser Abschnitt untersucht daher, [wie weit eine exakte Lösung über die
 // Aufzählung von Topologien reicht und wie nah MST und eine einfache Heuristik
@@ -134,7 +145,7 @@ Ein Steinerbaum ist _vollständig_, wenn alle Terminale Blätter sind (Grad 1).
 Hat mindestens ein Terminal Grad 2 oder 3, ist der Baum _unvollständig_. Damit
 ein unvollständiger Baum optimal sein kann, müssen alle Winkel an diesen
 Terminalen mindestens 120° betragen; sonst könnte der Baum durch einen
-zusätzlichen Steinerknoten verkürzt werden (siehe //eignschaften).
+zusätzlichen Steinerknoten verkürzt werden (siehe @sec:eigenschaften).
 
 Jeder unvollständige Baum lässt sich an seinen Terminalen mit Grad 2 oder 3 in
 vollständige Teilbäume zerlegen @hwang1992. Für exakte Verfahren genügt es
@@ -143,10 +154,10 @@ diese anschließend zu kombinieren.
 
 Beim Berechnen einer vollständigen Topologie kann ein Steinerknoten auf ein
 Terminal fallen, sodass die Kante zwischen beiden die Länge 0 hat. Der Baum ist
-dann _degeneriert_: Für diese Topologie existiert damm kein echter vollständiger
+dann _degeneriert_: Für diese Topologie existiert dann kein echter vollständiger
 Steinerbaum. Die Kante der Länge 0 lässt sich kontrahieren, und es entsteht ein
 unvollständiger Baum gleicher Länge. Dieser ist der kürzeste Baum, der sich mit
-der ursprünglichen Topologie erreichen lässt, muss aber nicht Global optimal sein.
+der ursprünglichen Topologie erreichen lässt, muss aber nicht global optimal sein.
 Da er sich wiederum in vollständige Teilbäume kleinerer Teilmengen zerlegen lässt, die ohnehin betrachtet werden, können degenerierte Ergebnisse in exakten Verfahren verworfen werden.
 
 
@@ -238,7 +249,7 @@ ist um Größenordnungen kleiner.
 
 === Algorithmus von Melzak <sec:melzak>
 
-Melzak zeigte als Erster, dass sich das euklidische Steinerbaumproblem in
+Melzak zeigte als Erster, dass sich das euklidische Steinerbaum-Problem in
 endlich vielen Schritten exakt lösen lässt @melzak1961. Sein Verfahren besteht
 aus zwei Teilen: einer geometrischen Konstruktion, die für eine feste
 vollständige Topologie den optimalen Baum liefert, und einer Suche über alle
@@ -267,7 +278,7 @@ nicht realisierbar und wird verworfen.
 ==== Vom vollständigen Teilbaum zum optimalen Baum
 
 Da jeder Steinerbaum in vollständige Teilbäume zerfällt
-(<@sec:vollstaendig>), wird zunächst für jede Teilmenge $X$ der Terminale der
+(@sec:vollstaendig), wird zunächst für jede Teilmenge $X$ der Terminale der
 beste vollständige Teilbaum $"FST"(X)$ bestimmt. Der optimale Baum für $X$ ist
 dann entweder dieser vollständige Teilbaum oder die Vereinigung zweier optimaler
 Bäume, die sich genau ein Terminal teilen:
@@ -292,15 +303,14 @@ superexponentiellen Zahl der Topologien dominiert.
 
 === Implementierung <sec:eukl-implementierung>
 
-Das Verfahren ist in Python mit NumPy und NetworkX umgesetzt [Link zum
-GitLab-Repository]. Die vollständigen Topologien werden wie in
-@sec:topologien erzeugt; für jede werden alle $2^(k-2)$ Seitenwahlen mit Melzak
-getestet und der kürzeste gültige Baum behalten. In der Rückwärtsphase wird
-ein Steinerknoten verworfen, wenn er nicht auf der Strecke $e c$ liegt, der
-Winkel $a s b$ nicht 120° beträgt oder er mit einem Nachbarn zusammenfällt;
-degenerierte Bäume werden so gemäß @sec:vollstaendig direkt aussortiert. Alle
-Vergleiche verwenden eine relative Toleranz von $10^(-9)$, bezogen auf die
-beteiligten Kantenlängen.
+Das Verfahren ist in Python mit NumPy und NetworkX umgesetzt. Die vollständigen
+Topologien werden wie in @sec:topologien erzeugt; für jede werden alle
+$2^(k-2)$ Seitenwahlen mit Melzak getestet und der kürzeste gültige Baum
+behalten. In der Rückwärtsphase wird ein Steinerknoten verworfen, wenn er nicht
+auf der Strecke $e c$ liegt, der Winkel $a s b$ nicht 120° beträgt oder er mit
+einem Nachbarn zusammenfällt; degenerierte Bäume werden so gemäß
+@sec:vollstaendig direkt aussortiert. Alle Vergleiche verwenden eine relative
+Toleranz von $10^(-9)$, bezogen auf die beteiligten Kantenlängen.
 
 Phase 1 berechnet den besten vollständigen Teilbaum für jede Teilmenge,
 Phase 2 kombiniert sie nach der Rekursion aus @sec:melzak, von kleinen zu
@@ -311,24 +321,23 @@ Melzak-Verfahren für drei Terminale.
 
 === Komplexität <sec:komplexitaet>
 
-Das euklidische Steinerbaumproblem ist NP-schwer @garey1977euclidean. Aber nicht als NP-vollständig belegt.
-Es ist unbekannt ob die Entscheidungsvariante in NP liegt („Gibt es einen Steinerbaum der Länge höchstens $L$?“), die Topologie und Koordinaten könnte man schnell konstruieren aber ddie Länge ist eine summe von Quadratwurzeln. Ob eine solche Summe kleiner als $L$ ist, lässt sich nicht
-bekanntermaßen in Polynomialzeit entscheiden, da unklar ist, wie viele Stellen
-dafür im Allgemeinen nötig sind (_Sum of Square Roots_ problem).
-
-Beispiel:
+Das euklidische Steinerbaum-Problem ist NP-schwer @garey1977euclidean, aber
+nicht als NP-vollständig belegt: Es ist unbekannt, ob die Entscheidungsvariante
+(„Gibt es einen Steinerbaum der Länge höchstens $L$?“) in NP liegt. Topologie
+und Koordinaten einer Lösung ließen sich zwar schnell angeben, ihre Länge ist
+aber eine Summe von Quadratwurzeln. Ob eine solche Summe kleiner als $L$ ist,
+lässt sich nicht bekanntermaßen in Polynomialzeit entscheiden, da unklar ist,
+wie viele Stellen dafür im Allgemeinen nötig sind (_Sum of Square Roots_).
+Beispielsweise unterscheiden sich (eigene Berechnung)
 $ sqrt(2) + sqrt(34) + sqrt(42) + sqrt(55) + sqrt(57) quad "und" quad
   sqrt(5) + sqrt(30) + sqrt(37) + sqrt(53) + sqrt(58) $
-unterscheiden sich um nur etwa $1,43 dot 10^(-12)$.
+nur um etwa 1,43 · 10#super[−12]; mit doppelter Genauigkeit berechnet sind von
+dieser Differenz nur noch drei Ziffern korrekt.
 
-GeoSteiner
-begegnet diesem Problem, indem es die Koordinaten der Ersatzpunkte exakt im
-Zahlkörper $QQ(sqrt(3))$ berechnet und erst die Längen numerisch annähert
-@juhl2018. In der Praxis ist diese Unterscheidung jedoch weitgehend irrelevant.
-
-
-
-
+GeoSteiner berechnet deshalb die Koordinaten der Ersatzpunkte exakt im
+Zahlkörper $QQ(sqrt(3))$ und nähert erst die Längen numerisch an @juhl2018. In
+der Praxis ist die Frage dennoch nachrangig, denn die eigentliche Schwierigkeit
+liegt in der Wahl der Topologie, nicht in der Genauigkeit der Rechnung.
 
 
 == Näherung und Steiner-Verhältnis <sec:eukl-naeherung>
@@ -336,7 +345,8 @@ Zahlkörper $QQ(sqrt(3))$ berechnet und erst die Längen numerisch annähert
 === MST und 120°-Heuristik
 
 Der euklidische MST lässt sich in $O(n log n)$ berechnen, da er in der
-Delaunay-Triangulierung der Terminale enthalten ist. Er ist bereits ein
+Delaunay-Triangulierung der Terminale enthalten ist; für die hier betrachteten
+Größen genügt der vollständige Graph. Er ist bereits ein
 gültiger Steinerbaum ohne Steinerknoten. Eine einfache Heuristik verbessert ihn
 lokal: Schließen zwei Kanten an einem Knoten einen Winkel unter 120° ein,
 werden sie durch einen Steinerknoten im Fermat-Punkt der drei beteiligten
@@ -344,13 +354,14 @@ Knoten ersetzt (vgl. @sec:eigenschaften). Das wird wiederholt, bis kein
 solcher Winkel mehr existiert. Da jeder Schritt den Baum verkürzt, ist das
 Ergebnis nie länger als der MST, es muss aber nicht optimal sein, da nur
 lokal verbessert wird und die Topologie des MST weitgehend erhalten bleibt.
-Wie nah die Heuristik dem Optimum kommt, untersucht TODO.
+Wie nah die Heuristik dem Optimum kommt, untersucht @sec:eukl-experimente.
 
 === Steiner-Verhältnis
 
 Wie viel ein Steinerbaum höchstens gegenüber dem MST spart, beschreibt das
-_Steiner-Verhältnis_
-Gilbert und Pollak vermuteten $rho = sqrt(3)\/2$ ≈ 0,866 @gilbert1968; dieser
+_Steiner-Verhältnis_ $rho$, das kleinstmögliche Verhältnis aus der Länge des
+minimalen Steinerbaums und der des MST. Gilbert und Pollak vermuteten
+$rho = sqrt(3)\/2$ ≈ 0,866 @gilbert1968; dieser
 Wert wird vom gleichseitigen Dreieck erreicht. Die Ersparnis betrüge dann
 höchstens etwa 13,4 %, und umgekehrt wäre der MST höchstens
 $2\/sqrt(3)$ ≈ 1,155-mal so lang wie das Optimum.
@@ -365,57 +376,57 @@ höchstens etwa 1,21-mal so lang wie der minimale Steinerbaum.
 === Aktuelle Entwicklungen
 
 Ke et al. verwenden von großen Sprachmodellen erzeugte Beweisbausteine, die
-maschinell verifiziert werden, und behaupten damit eine untere Schranke von
-$rho >=$ 0,8559 @llm2026gilbertpollak. Dies würde die Schranke von 1985
-deutlich verbessern und den MST-Faktor auf etwa 1,17 senken. [Status der
-Begutachtung prüfen.]
+maschinell verifiziert werden, und erhalten damit eine zertifizierte untere
+Schranke von $rho >=$ 0,8559 @llm2026gilbertpollak. Die Arbeit erschien auf der
+ICML 2026, einer Konferenz für maschinelles Lernen. Das Ergebnis würde die
+Schranke von 1985 deutlich verbessern und den MST-Faktor auf etwa 1,17 senken.
 
 
 == Experimente <sec:eukl-experimente>
 
 === Versuchsaufbau
 
-Alle Messungen liefen auf [CPU, RAM] mit Python [Version], NumPy [Version]
-und NetworkX [Version]. Zufallsinstanzen bestehen aus $n$ gleichverteilten
+Alle Messungen liefen auf einem Intel Core i5-13600K mit 32 GB DDR4-3200
+(Dual Channel) unter Python 3.12.4 mit NumPy 1.26.4 und NetworkX 3.2.1. Zufallsinstanzen bestehen aus $n$ gleichverteilten
 Punkten im Einheitsquadrat mit den Seeds 0 bis 4 je Größe. Zur Validierung
 dienen die 46 Instanzen von Soukup und Chow aus der OR-Library (Datei
-estein1), deren Optima bekannt sind @beasley1990. [Für größere $n$ wird die
-Heuristik zusätzlich auf estein10 bis estein100 mit bekannten Optima
-getestet.]
+estein1) mit 3 bis 62 Terminalen, deren Optima bekannt sind @beasley1990.
 
 === Validierung
 
 Der exakte Löser wurde auf allen 19 Instanzen aus estein1 mit $n <= 7$
-ausgeführt. Die Abweichung vom bekannten Optimum betrug höchstens
-$3 dot 10^(-10)$, liegt also im Bereich der Rechengenauigkeit. Auch die
+ausgeführt. Die relative Abweichung vom bekannten Optimum betrug höchstens
+3,2 · 10#super[−10], liegt also im Bereich der Rechengenauigkeit. Auch die
 berechneten MST-Längen stimmen mit den in der OR-Library hinterlegten Werten
-überein [max. Abweichung einsetzen]. Zusätzlich wurden zwei Plausibilitäten
-auf allen Läufen geprüft: Die Heuristik war nie kürzer als die exakte Lösung,
-und die Längenschranke veränderte das Ergebnis nie.
+überein (höchstens 3,3 · 10#super[−10] Abweichung). Zusätzlich wurden zwei
+Plausibilitäten auf allen Läufen geprüft: Die Heuristik war nie kürzer als die
+exakte Lösung, und die Längenschranke veränderte das Ergebnis nie.
 
 === Laufzeit
 
-@fig:laufzeit zeigt die Laufzeit in Abhängigkeit von $n$. Für $n = 6$
-benötigt der exakte Löser etwa 0,2 s, für $n = 7$ etwa 6,8 s und für $n = 8$
-etwa 146 s. Die Zeit pro Melzak-Aufruf ist dabei nahezu konstant (etwa
-0,15 ms für $n = 7$ und $n = 8$); die Laufzeit folgt also direkt der Zahl der
-Aufrufe aus @sec:melzak. Daraus ergeben sich etwa 1 h für $n = 9$ und etwa
-31 h für $n = 10$. Die exakte Lösung durch Aufzählung ist damit ab
+@fig:laufzeit zeigt die Laufzeit in Abhängigkeit von $n$. Ohne Längenschranke
+benötigt der exakte Löser für $n = 6$ etwa 0,22 s, für $n = 7$ etwa 4,4 s und
+für $n = 8$ etwa 155 s. Die Laufzeit folgt damit im Wesentlichen der Zahl der
+Melzak-Aufrufe aus @sec:melzak; die Zeit pro Aufruf steigt dabei leicht an
+(etwa 0,10 ms für $n = 7$ und 0,16 ms für $n = 8$), da die Teilbäume größer
+werden. Schon mit der Zeit pro Aufruf aus $n = 8$ ergeben sich für $n = 9$ über
+1 h und für $n = 10$ über 30 h. Die exakte Lösung durch Aufzählung ist damit ab
 $n approx 9$ unpraktikabel.
 
 #figure(image("laufzeit.pdf", width: 80%),
-  caption: [Laufzeit des exakten Lösers und der Heuristik (Median über die
-    Seeds), logarithmische Achse.]) <fig:laufzeit>
+  caption: [Laufzeit des exakten Lösers (gesamt und Kombinationsphase, mit und
+    ohne Längenschranke, Mittel über die Seeds) und Prognose aus der Zahl der
+    Melzak-Aufrufe (untere Abschätzung), logarithmische Achse.]) <fig:laufzeit>
 
 === Ursachen und Optimierungen
 
-Die Kombination der Teilbäume (Phase 2) benötigt weniger als 1 % der
-Laufzeit; nahezu die gesamte Zeit entfällt auf die Melzak-Konstruktionen.
-Davon sind 99,9 % vergeblich, da für jede Topologie alle $2^(k-2)$
-Seitenwahlen getestet werden, von denen höchstens eine gültig ist. Zudem ist
-nur ein kleiner und schnell sinkender Teil der Topologien überhaupt
-realisierbar (@fig:anteile): 19 % bei $k = 4$, 3,6 % bei $k = 5$, 0,9 % bei
-$k = 6$ und 0,09 % bei $k = 7$.
+Die Kombination der Teilbäume (Phase 2) benötigt ab $n = 6$ weniger als 1 %
+der Laufzeit; nahezu die gesamte Zeit entfällt auf die
+Melzak-Konstruktionen. Davon sind über 99,9 % vergeblich, da für jede Topologie
+alle $2^(k-2)$ Seitenwahlen getestet werden, von denen höchstens eine gültig
+ist. Zudem ist nur ein kleiner und schnell sinkender Teil der Topologien
+überhaupt realisierbar (@fig:anteile): 20 % bei $k = 4$, 4,4 % bei $k = 5$,
+1,2 % bei $k = 6$, 0,22 % bei $k = 7$ und 0,03 % bei $k = 8$.
 
 #figure(image("anteile.pdf", width: 80%),
   caption: [Anteil realisierbarer Topologien und gültiger Seitenwahlen je
@@ -423,7 +434,7 @@ $k = 6$ und 0,09 % bei $k = 7$.
 
 Als Optimierung wurde die Längenschranke aus @juhl2018 umgesetzt: Keine Kante
 eines minimalen Steinerbaums ist länger als die längste Kante des MST. Sie
-änderte die Laufzeit nicht messbar (Unterschiede zwischen −19 % und +9 %
+änderte die Laufzeit nicht messbar (Unterschiede zwischen −23 % und +11 %
 ohne Trend). Der Grund ist, dass die Kantenlängen erst in der Rückwärtsphase
 bekannt sind; die teure Vorwärtsphase läuft in jedem Fall vollständig.
 Wirksamer wären Maßnahmen, die ganze Topologien oder Seitenwahlen vorab
@@ -435,19 +446,21 @@ Kopieren der Graphen pro Aufruf und das erneute Erzeugen der Topologien für
 jede Teilmenge gleicher Größe vermeiden; am exponentiellen Wachstum ändert das
 nichts.
 
-// === Qualität der Näherung
+=== Qualität der Näherung
 
-// Auf den Zufallsinstanzen spart der optimale Steinerbaum je nach $n$ etwa 3 bis
-// 5 % gegenüber dem MST, die Heuristik etwa 3 bis 4,5 % (@fig:ersparnis). Das
-liegt in der Größenordnung der rund 3 %, die @juhl2018 für große
-Zufallsinstanzen angibt, und weit unter der theoretischen Obergrenze von 13,4 %.
-Auf allen 46 Instanzen aus estein1 ist die Heuristik im Mittel 0,8 % und
-höchstens 7,5 % länger als das Optimum. [Ergebnis für estein10 bis
-estein100 ergänzen: mittlere und maximale Abweichung, ggf. Trend mit $n$.]
+Auf den Zufallsinstanzen spart der optimale Steinerbaum im Mittel 4,55 %
+gegenüber dem MST, die Heuristik 4,09 % (@fig:ersparnis). Das liegt etwas
+über den rund 3 %, die @juhl2018 für große Zufallsinstanzen angibt, und weit
+unter der theoretischen Obergrenze von 13,4 %. Auf allen 46 Instanzen aus
+estein1 ist die Heuristik im Mittel 0,8 % und höchstens 7,5 % länger als das
+Optimum. Bei den 19 Instanzen mit $n <= 7$ findet sie in 68 % der Fälle das
+Optimum, bei den 27 größeren Instanzen nur noch in 15 %, bei einer mittleren
+Abweichung von 1,0 % und höchstens 4,8 %.
 
-// #figure(image("ersparnis.pdf", width: 80%),
-//   caption: [Ersparnis gegenüber dem MST für den exakten Löser und die
-//     Heuristik.]) <fig:ersparnis>
+#figure(image("ersparnis.pdf", width: 80%),
+  caption: [Ersparnis gegenüber dem MST für den exakten Löser und die
+    Heuristik.]) <fig:ersparnis>
+
 
 = Rektilineares Steinerbaum-Problem
 
@@ -816,15 +829,23 @@ ein Graphenproblem über.
 
 Alle drei Varianten sind NP-schwer @karp1972 @garey1977rectilinear @garey1977euclidean.
 Ein Verfahren, das für beliebige Eingaben in polynomieller Zeit eine optimale Lösung
-liefert, ist für keine von ihnen bekannt und eine garantiert optimale Lösung kostet damit
-exponentiellen Aufwand.
+liefert, ist für keine von ihnen bekannt, und eine garantiert optimale Lösung kostet damit
+nach heutigem Kenntnisstand exponentiellen Aufwand.
 
-Die Messungen zeigen, wie ungleich sich dieser Aufwand über den Parameterbereich verteilt.
-Bei gleichbleibender Knotenzahl $n = 30$ steigt die Laufzeit des exakten Verfahrens mit
-wachsender Terminalzahl zunächst auf rund zwölf Sekunden bei $r = 11$ an und fällt danach
-wieder auf sechs Millisekunden bei $r = 30$. Der Grund liegt in der Aufzählung über
-Teilmengen der $n - r$ Steinerknoten, von denen bei vielen Terminalknoten nur wenige
-übrig bleiben.
+Für das euklidische Problem ist die exakte Aufzählung aller Topologien mit Melzak nur bis
+etwa acht Terminale praktikabel, da die Zahl der Topologien superexponentiell wächst und
+nur ein verschwindend kleiner Teil davon realisierbar ist. Gleichzeitig ist der Gewinn
+gering: Der optimale Steinerbaum war im Mittel nur 4,6 % kürzer als der MST, und schon eine
+einfache 120°-Heuristik kam dem Optimum auf den Instanzen der OR-Library im Mittel auf
+0,8 % nahe. Die Grundaussage, dass Steinerbäume in der Praxis nur wenige Prozent sparen,
+wird damit bestätigt.
+
+Die Messungen für das Graphenproblem zeigen, wie ungleich sich der Aufwand über den
+Parameterbereich verteilt. Bei gleichbleibender Knotenzahl $n = 30$ steigt die Laufzeit des
+exakten Verfahrens mit wachsender Terminalzahl zunächst auf rund zwölf Sekunden bei
+$r = 11$ an und fällt danach wieder auf sechs Millisekunden bei $r = 30$. Der Grund liegt
+in der Aufzählung über Teilmengen der $n - r$ Steinerknoten, von denen bei vielen
+Terminalknoten nur wenige übrig bleiben.
 
 Die approximative Lösung folgt diesem Verlauf nicht. Ihre Laufzeit bleibt über den gesamten
 Parameterbereich unter zehn Millisekunden. In 59 Prozent der Fälle findet sie den optimalen
@@ -837,7 +858,8 @@ möglich bleibt und in welchen nur eine Näherung in Frage kommt. Das rektilinea
 lässt sich über das Hanan-Gitter zwar auf einen Graphen zurückführen, dort sind Knoten- und
 Terminalzahl durch die Konstruktion aber fest aneinander gekoppelt. Solche Instanzen treffen
 immer denselben Ausschnitt des Parameterraums und die hier über frei gewählte $r$ und $n$
-gemessenen Verläufe lassen sich nicht unmittelbar darauf übertragen. Für das euklidische
-Problem greift die Einschätzung noch weniger, da dort die Lage der Steinerknoten nicht im
-Voraus feststeht und die Anzahl der zu prüfenden Topologien immer exponentiell mit der Zahl
-der Terminalknoten wächst.
+gemessenen Verläufe lassen sich nicht unmittelbar darauf übertragen. Auf das euklidische
+Problem sind sie gar nicht übertragbar, da dort die Lage der Steinerknoten nicht im Voraus
+feststeht und die Anzahl der zu prüfenden Topologien superexponentiell mit der Zahl der
+Terminale wächst. In beiden Fällen zeigt sich aber dasselbe Muster: Die exakte Lösung wird
+schnell unbezahlbar, während einfache Näherungen dem Optimum bereits sehr nahe kommen.
