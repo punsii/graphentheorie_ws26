@@ -547,7 +547,7 @@ Der Ablauf besteht aus vier Schritten:
 + Zähle alle Teilmengen $S' subset.eq S$ mit $|S'| <= r - 2$ auf.
 + Bestimme für jede davon einen minimalen Spannbaum über $R union S'$, wobei als
   Kantengewicht der kürzeste Abstand zwischen zwei Knoten dient und merke dir den
-  mit der niedrigsten Summer von Kantengewichten.
+  mit der niedrigsten Summe von Kantengewichten.
 + Ersetze die Kanten dieses Spannbaums durch die kürzesten Wege, für die sie stehen.
 
 Der dritte Schritt arbeitet nicht auf dem ursprünglichen Graphen, sondern auf der
