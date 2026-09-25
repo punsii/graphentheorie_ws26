@@ -48,21 +48,21 @@ unterscheiden sie sich und welche davon eignen sich für eine eigene Implementie
 Als fachlicher Ausgangspunkt diente anschließend die Arbeit „Implications, conflicts, and
 reductions for Steiner trees“ von Rehfeldt und Koch @rehfeldt2023. Der Beitrag selbst
 behandelt Reduktionstechniken für exakte Löser und geht damit über den Umfang dieser Arbeit
-hinaus. Nützlich war für uns vor allem seine Einleitung: Sie definiert das
+hinaus. Nützlich war vor allem seine Einleitung. Sie definiert das
 Steinerbaum-Problem in Graphen, ordnet den Stand der Technik ein und verweist auf relevante
 Wettbewerbe der letzten Jahre, über die sich aktuelle Fragestellungen erschließen lassen.
 
-Zwei dieser Wettbewerbe haben wir näher betrachtet: die 11. DIMACS Implementation Challenge
+Näher betrachtet wurden zwei dieser Wettbewerbe, die 11. DIMACS Implementation Challenge
 von 2014 @dimacs11 und die PACE Challenge 2018 @pace2018web @bonnet2018. Aus den
-Wettbewerbsunterlagen ergab sich der nächste Schritt: eine Sichtung der verschiedenen
+Wettbewerbsunterlagen ergab sich als nächster Schritt eine Sichtung der verschiedenen
 Problemdefinitionen und ihrer Beziehungen zueinander. Entscheidend war dabei die
 Beobachtung, dass sich die geometrischen Varianten unter geeigneten Voraussetzungen auf das
 Problem in Graphen zurückführen lassen. Diese Erkenntnis bildete die Basis für die Wahl der
-behandelten Themen: Das euklidische und das rektilineare Problem werden theoretisch
+behandelten Themen. Das euklidische und das rektilineare Problem werden theoretisch
 behandelt und über diese Reduktion mit dem Graphenproblem verbunden.
 
 Auf dieser Grundlage wurde festgelegt, was selbst umgesetzt wird. Für das Problem in Graphen
-haben wir uns für eine eigene Implementierung eines exakten Verfahrens entschieden, um
+fiel die Entscheidung auf eine eigene Implementierung eines exakten Verfahrens, um
 dessen theoretisches Laufzeitverhalten nicht nur zitieren, sondern auch messen zu können.
 Als Vorlage dient Algorithmus 4.6.3 aus Jungnickel, „Graphs, Networks and Algorithms“
 @jungnickel1999, der zugleich Grundlage der Lehrveranstaltung ist und das Verfahren
@@ -135,7 +135,7 @@ Da er sich wiederum in vollständige Teilbäume kleinerer Teilmengen zerlegen l�
 
 === Eigenschaften optimaler Lösungen <sec:eigenschaften>
 
-// === Eigenschaften optimaler Lösungen    
+// === Eigenschaften optimaler Lösungen
 
 //  Für die Optimale lösung einer Topologie müssen alle Winkel zwischen Kanten mindestens 120 grad haben, desweiteren sind alle Steinerknoten Grad 3. Falls es einen Vollständigen Optimalen Baum besitzt dieser für n Terminale = n - 2 Steinerknoten, für denn unvollständigen fall sinde es maximal n - 2 Steinerknoten
 
@@ -171,11 +171,11 @@ degenerierten) Steinerknoten. Liegt dort an einem Terminal ein Winkel unter
 
 === Anzahl der Topologien <sec:topologien>
 
-// === Anzahl der Topologien 
-// Zur veranschaulichung der vollen Topologien, wir starten mit Genau einer Topologie für 3 Terminale, wenn wir jetzt ein weiteres Terminal hinzufügen, trennen wir eine beliebige kante mit einem neuen Steinerknoten an denn wir das Terminal hängen. Das heißt in unserem fall sind das 3 möglichkeiten für einen weiteres Terminal schon die 3 möglichkeiten mal weiter 5 also schon 15. 
+// === Anzahl der Topologien
+// Zur veranschaulichung der vollen Topologien, wir starten mit Genau einer Topologie für 3 Terminale, wenn wir jetzt ein weiteres Terminal hinzufügen, trennen wir eine beliebige kante mit einem neuen Steinerknoten an denn wir das Terminal hängen. Das heißt in unserem fall sind das 3 möglichkeiten für einen weiteres Terminal schon die 3 möglichkeiten mal weiter 5 also schon 15.
 // (2n − 5)!! - superfakultät weil wir von 3 kanten direkt auf 5 kanten kommen etc. und superexponentiel
 
-// Für unvollständige Topologien gibt es nochmal xy z .... 
+// Für unvollständige Topologien gibt es nochmal xy z ....
 
 Vollständige Topologien bauen wir schrittweise auf @hwang1992. Eine
 vollständige Topologie mit $k - 1$ Terminalen hat $2k - 5$ Kanten. Um das
@@ -184,7 +184,7 @@ Steinerknoten geteilt und das Terminal dort angehängt; dafür gibt es $2k - 5$
 Möglichkeiten.
 // Umgekehrt entsteht jede vollständige Topologie mit $k$
 // Terminalen auf genau eine Weise, denn entfernt man das Terminal $k$ und seinen
-// Steinerknoten, erhält man die Vorgänger-Topologie eindeutig zurück. 
+// Steinerknoten, erhält man die Vorgänger-Topologie eindeutig zurück.
 Damit gibt
 es
 $ product_(k=4)^n (2k - 5) = 1 dot 3 dot 5 dot dots dot (2n - 5) = (2n - 5)!! $
@@ -216,7 +216,7 @@ ist um Größenordnungen kleiner.
 ) <tab:topologien>
 
 
-== Exakte Lösung <sec:eukl-exakt>  
+== Exakte Lösung <sec:eukl-exakt>
 
 
 === Algorithmus von Melzak <sec:melzak>
@@ -302,7 +302,7 @@ dafür im Allgemeinen nötig sind (_Sum of Square Roots_ problem).
 Beispiel:
 $ sqrt(2) + sqrt(34) + sqrt(42) + sqrt(55) + sqrt(57) quad "und" quad
   sqrt(5) + sqrt(30) + sqrt(37) + sqrt(53) + sqrt(58) $
-unterscheiden sich um nur etwa $1,43 dot 10^(-12)$. 
+unterscheiden sich um nur etwa $1,43 dot 10^(-12)$.
 
 GeoSteiner
 begegnet diesem Problem, indem es die Koordinaten der Ersatzpunkte exakt im
@@ -661,7 +661,7 @@ Ein Graph besteht aus einer Knotenmenge und einer Kantenmenge:
 Darauf aufbauend sind die drei Bestandteile des Verfahrens einzeln implementiert:
 `floyd()` für die kürzesten Wege einschließlich Vorgängertabelle, `prim()` für die
 Spannbäume und `steiner()` für die Aufzählung samt Rückübersetzung der Wege. Die
-Vergleichsnäherung stammt aus networkx. Unsere eigenen Graphen werden dafür konvertiert.
+Vergleichsnäherung stammt aus networkx. Die eigenen Graphen werden dafür konvertiert.
 
 Um den Aufbau herum liegen drei weitere Bausteine: ein Generator für Zufallsinstanzen, ein
 Script zur Messung der Laufzeiten und Abspeichern der Ergebnisse als CSV-Datei, sowie
@@ -779,28 +779,7 @@ also gerade dort am ungenauesten, wo das exakte Verfahren am teuersten ist.
   ],
 ) <fig:guete-approximation>
 
-== Interpretation der Laufzeitkurve
-
-// Warum die Kurve einen Buckel hat, wenn sich das Verhältnis von Terminalknotenn zu
-// Steiner-Knoten verschiebt.
-// Quelle: @dreyfus1971 (Gegensatz: exponentiell in r statt in |S|)
-
 = Fazit
-
-// - Im Allgemeinen NP-vollständig (Entscheidungsvariante).
-// - Approximationen liefern schnell brauchbare Ergebnisse.
-// - Eigenes Ergebnis: die Laufzeit des exakten Verfahrens verläuft nicht monoton, sondern
-//   mit einem Buckel über r. Klein für wenige Terminalknoten, unbrauchbar im mittleren Bereich,
-//   wieder klein, wenn r sich n nähert, weil über Teilmengen der n − r Steiner-Knoten
-//   aufgezählt wird. Praktisch: das exakte Verfahren ist an beiden Enden einsetzbar.
-// - Wann welches Verfahren angebracht ist, und dass das über die Reduktion ebenso für die
-//   geometrischen Varianten gilt.
-// - Ausblick: Dreyfus-Wagner sowie die Reduktionstechniken von Rehfeldt und Koch.
-// Quellen: @karp1972, @dreyfus1971, @rehfeldt2023
-
-= Anhang
-
-== Repository
 
 Betrachtet wurden drei Varianten des Steinerbaum-Problems. Im euklidischen Fall dürfen die
 Steinerknoten frei in der Ebene liegen, womit unendlich viele Lagen in Frage kommen und die
