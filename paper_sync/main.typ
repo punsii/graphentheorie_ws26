@@ -142,18 +142,32 @@ Mittel sogar nur bei rund 3 % #cite(<juhl2018>). Es stellt sich die frage wie na
 
 = Rektilineares Steinerbaum-Problem
 
-// Kurz halten, dient als Übergang zum Graphenproblem.
-// Quelle: @garey1977rectilinear (NP-Vollständigkeit)
-
-== Bedeutung im Schaltungsentwurf
+Beim rektilinearen Problem dürfen Verbindungen nur waagerecht und senkrecht verlaufen.
+Diese Einschränkung wirkt zunächst willkürlich, ist
+aber die Geometrie, in der häufig Leiterbahnen auf Platinen und in integrierten Schaltungen
+verlegt werden.
 
 == Hanan-Gitter und Reduktion auf das Graphenproblem
 
-// Ein optimaler rektilinearer Steinerbaum existiert auf dem Gitter, das die waagerechten
-// und senkrechten Geraden durch die Terminalknoten aufspannen. Damit wird aus einem
-// geometrischen Problem mit unendlich vielen Kandidatenpunkten ein endliches
-// Graphenproblem.
-// Quelle: @hanan1966
+Legt man durch jeden
+Terminalknoten je eine waagerechte und eine senkrechte Gerade, so entsteht ein Gitter,
+von dem gezeigt werden kann, dass ein optimaler rektilinearer Steinerbaum darauf existiert.
+Diese Konstruktion geht auf Hanan zurück @hanan1966.
+
+Damit wird aus einem Problem mit unendlich vielen Kandidatenpunkten eines mit endlich
+vielen. Bei $r$ Terminalknoten hat das Gitter höchstens $r^2$ Schnittpunkte.
+Relevant ist dabei, dass sich diese Kandidatenpunkte allein aus der Lage der Terminalknoten
+ergeben und nicht davon abhängen, wie der Baum am Ende verläuft.
+
+Die Konstruktion lässt sich noch verkleinern, da ein Gitterknoten,
+in dessen einem Quadranten kein Terminalknoten liegt, von keinem optimalen Baum als
+Verzweigung benötigt wird und daher entfernt werden kann.
+
+Aus dem verbleibenden Gitter wird schließlich ein Graph. Die Schnittpunkte werden zu Knoten,
+die Gitterstrecken zwischen benachbarten Schnittpunkten zu Kanten und als Kantengewicht
+dient der Abstand der beiden Endpunkte. Die ursprünglichen Terminalknoten bleiben
+Terminalknoten. Ab diesem Punkt wird keine geometrische Information mehr benötigt und übrig
+bleibt genau das Steinerbaum-Problem in Graphen, um das es im Folgenden geht.
 
 = Steinerbaum-Problem in Graphen
 
