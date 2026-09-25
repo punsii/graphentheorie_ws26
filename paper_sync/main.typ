@@ -196,20 +196,71 @@ bleibt genau das Steinerbaum-Problem in Graphen, um das es im Folgenden geht.
 
 = Steinerbaum-Problem in Graphen
 
+Gegeben ist ein Netzwerk $(G, w)$ mit zusammenhängendem Graphen $G = (V, E)$ und positiver
+Gewichtsfunktion $w$, dazu eine Menge $R subset.eq V$ von Terminalknoten. Gesucht ist ein
+Baum $T subset.eq E$ minimalen Gewichts $w(T)$, der alle Knoten aus $R$ verbindet. Die
+übrigen Knoten $S = V without R$ dürfen dabei verwendet werden, müssen es aber nicht.
+
+Sind alle Knoten Terminalknoten, gilt also $R = V$,
+so ist der gesuchte Baum ein minimaler Spannbaum und mit den bekannten Verfahren in
+polynomieller Zeit zu bestimmen. Besteht $R$ dagegen nur aus zwei Knoten, so ist die Lösung
+ein kürzester Weg. Schwierig wird erst der Bereich dazwischen, in dem
+auszuwählen ist, welche der Steiner-Knoten tatsächlich gebraucht werden.
+
 == NP-Vollständigkeit
 
-// Entscheidungsvariante NP-vollständig (Karp 1972), Optimierungsvariante NP-schwer.
-// Quelle: @karp1972
+Genau diese Auswahl macht das Problem schwer. Die Entscheidungsvariante, also die Frage, ob
+ein Baum mit Gewicht höchstens $L$ existiert, gehört zu den ursprünglichen 21 Problemen, für
+die Karp die NP-Vollständigkeit gezeigt hat @karp1972. Das hier behandelte Optimierungsproblem,
+das nach dem tatsächlich minimalen Gewicht fragt, ist daher NP-schwer.
 
 == Einfache Approximation über den minimalen Spannbaum
 
-// Minimaler Spannbaum über alle Terminalknoten, danach Entfernen der überflüssigen
-// Steiner-Knoten. Übergang: "Aber geht es besser?"
+Eine Näherungslösung kann in polynomieller Zeit gefunden werden, indem man die kürzesten Wege
+zwischen allen Terminalknoten sucht und auf diesen Abständen einen minimalen Spannbaum
+über $R$ allein definiert. Anschließend ersetzt man jede seiner Kanten durch den zugehörigen kürzesten Weg.
+Das Ergebnis ist ein zulässiger Steinerbaum und sein Gewicht überschreitet das Optimum nie um mehr als den Faktor zwei.
+
+In vielen Fällen ignoriert diese Konstruktion allerdings Steinerknoten, die zwar auf keinem direkten kürzesten Pfad
+zwischen zwei Terminalknoten liegen, aber effiziente Knotenpunkte für die Verbindung mehrerer Teilgraphen darstellen können.
 
 = Implementierter Algorithmus
 
-// Algorithmus 4.6.3 aus Jungnickel.
-// Quelle: @jungnickel1999
+Umgesetzt wurde Algorithmus 4.6.3 aus Jungnickel @jungnickel1999. Er bestimmt den
+minimalen Steinerbaum exakt und beruht auf einer einfachen Überlegung: Stünde bereits fest,
+welche Steiner-Knoten im optimalen Baum vorkommen, so wäre nur noch ein minimaler Spannbaum
+über diese Knoten und die Terminalknoten zu bestimmen. Da das nicht feststeht, werden alle
+in Frage kommenden Teilmengen durchprobiert.
+
+Der Ablauf besteht aus vier Schritten:
+
++ Berechne die kürzesten Wege zwischen allen Knotenpaaren.
++ Zähle alle Teilmengen $S' subset.eq S$ mit $|S'| <= r - 2$ auf.
++ Bestimme für jede davon einen minimalen Spannbaum über $R union S'$, wobei als
+  Kantengewicht der kürzeste Abstand zwischen zwei Knoten dient und merke dir den
+  mit der niedrigsten Summer von Kantengewichten.
++ Ersetze die Kanten dieses Spannbaums durch die kürzesten Wege, für die sie stehen.
+
+Der dritte Schritt arbeitet nicht auf dem ursprünglichen Graphen, sondern auf der
+_metrischen Hülle_: dem vollständigen Graphen über die ausgewählten Knoten, in dem das Gewicht
+einer Kante der kürzeste Abstand ihrer Endknoten im Originalgraphen ist. In dieser Hülle ist jede
+Kante vorhanden, weshalb jede Knotenteilmenge zusammenhängend ist und immer ein Spannbaum existiert.
+
+#figure(
+  ```python
+  max_steiner_count = min(len(terminals) - 2, len(steiner_vertices))
+  for i in range(0, max_steiner_count + 1):
+      for selected_steiner_vertices in itertools.combinations(steiner_vertices, i):
+          vertex_subset = terminals | set(selected_steiner_vertices)
+          tree_edges, cost = prim(vertex_subset, distances)
+
+          if cost < best_weight:
+              best_weight = cost
+              best_tree_edges = tree_edges
+  ```,
+  caption: [Kern des Verfahrens: Aufzählung der Teilmengen und Auswahl des minimalen
+    Spannbaums.],
+) <lst:steiner>
 
 == Laufzeitanalyse
 
