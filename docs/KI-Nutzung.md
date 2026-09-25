@@ -46,16 +46,38 @@ In the final step AI was used to review, point out duplicate text, fix spelling 
 - Questions: how the individual steps of the algorithm work, and checks of claims about the
   choice and complexity of its subroutines.
 
-## _Team member_
+## Julius Greppmair
 
-_To be filled in by the author._
+### Tools used
 
-| Phase                 | AI use |
-| --------------------- | ------ |
-| Research              |        |
-| Project idea, outline |        |
-| Source code           |        |
-| Test cases            |        |
-| Algorithms            |        |
-| Slides                |        |
-| Paper                 |        |
+Webchat with Anthropic Claude and ChatGPT models.
+AI agent using Claude Code by Anthropic (VS Code extension).
+
+### Usage
+
+| Phase                 | AI use                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| Research              | clarifying questions in a web chat app                                                          |
+| Project idea, outline | None                                                                                            |
+| Source code           | AI agent used for the experiment code in `steiner_eukledean.ipynb` (benchmark, plots, data loading) |
+| Test cases            | AI agent used to create the tests and the validation against the OR-Library optima              |
+| Algorithms            | Written by hand (full topologies, Melzak, DP over subsets); Debugging with AI fixed degenerate cases, added counters, length bound and the MST + 120° heuristic |
+| Slides                | SVGs created with Claude                                                                        |
+| Paper                 | Rewording and Proofreading                                                                      |
+
+The exact algorithm for the Euclidean Steiner tree problem was written by hand: generating
+all full Steiner topologies, the Melzak construction including the reconstruction of the
+Steiner points, and the dynamic program that combines full subtrees into the optimal tree.
+The Claude Code agent was used to refactor this code for the experiments,
+benchmark and the plots. The agent found a bug in the original code in which degenerate
+cases produced `nan` and were accepted as valid trees.
+None of the AI-generated code was accepted without reading it
+The creation and editing of git commits was done by hand.
+
+### Kinds of instructions and questions
+
+- Instructions: which measurements the paper needs, keeping the code small and close to the original notebook, and plotting in the
+  notebook instead of separate scripts.
+- Questions: which code changes follow from the planned paper section, whether the results
+  are complete, how to run the heuristic on the larger OR-Library instances
+
